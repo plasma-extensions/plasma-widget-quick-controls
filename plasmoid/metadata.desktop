@@ -1,0 +1,22 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Quick Controls Panel.
+Name[es]=Panel de controles rápidos.
+Comment=Control your system from a quick panel.
+Comment[es]=Controla tu sistema de manera rápida sencilla.
+Type=Service
+Icon=system-run-symbolic
+X-KDE-ParentApp=
+X-KDE-PluginInfo-Author=Alexis López Zubieta
+X-KDE-PluginInfo-Email=azubieta90@gmail.com
+X-KDE-PluginInfo-Category=Tasks
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-Name=org.plasma-light.quick-controls
+X-KDE-PluginInfo-Version=3.0
+X-KDE-PluginInfo-Website=
+X-KDE-ServiceTypes=Plasma/Applet
+X-Plasma-API=declarativeappletscript
+X-KDE-PluginInfo-EnabledByDefault=true
+X-Plasma-Provides=org.plasma-light.quick-controls
+X-Plasma-MainScript=ui/main.qml
+X-Plasma-RequiredExtensions=LaunchApp

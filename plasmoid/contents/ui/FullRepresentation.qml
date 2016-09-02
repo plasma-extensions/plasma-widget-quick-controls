@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.2
 
 ColumnLayout {
     Flickable {
-          contentWidth: image.width; contentHeight: image.height
+
 
           ColumnLayout {
               NetworksPanel {}

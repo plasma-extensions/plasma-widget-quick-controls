@@ -3,8 +3,6 @@ import QtQuick.Layouts 1.2
 
 import org.kde.plasma.components 2.0 as PlasmaComponents
 
-import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
-
 RowLayout {
     spacing: 12
 

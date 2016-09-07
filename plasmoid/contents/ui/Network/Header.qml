@@ -38,7 +38,7 @@ PlasmaComponents.ListItem {
     PlasmaComponents.Label {
         id: headerLabel
 
-        anchors.centerIn: parent
+        //anchors.centerIn: parent
         height: paintedHeight
         font.weight: Font.DemiBold
     }
@@ -54,9 +54,9 @@ PlasmaComponents.ListItem {
         width: height
         flat: true
         tooltip: i18n("Rescan wireless networks")
-        visible: (header.text === i18n("Available connections") || !connectionView.availableConnectionsVisible) &&
+  /*      visible: (header.text === i18n("Available connections") || !connectionView.availableConnectionsVisible) &&
                  enabledConnections.wirelessEnabled && enabledConnections.wirelessHwEnabled && availableDevices.wirelessDeviceAvailable
-
+*/
         onClicked: {
             networkHandler.requestScan();
             refreshAnimation.restart();

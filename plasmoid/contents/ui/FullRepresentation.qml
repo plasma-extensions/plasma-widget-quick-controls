@@ -5,31 +5,37 @@ import org.kde.plasma.extras 2.0 as PlasmaExtras
 import "Network"
 import "Devices"
 
-ColumnLayout {
-
-        ColumnLayout {
-            anchors.fill: parent
-            NetworksPanel {
-                id: networksPanel
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-
-            BluetoothPanel {
-                id: bluetoothPanel
-            }
-            DevicesPanel {
-                id: devicesPanel
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-
-            AppearancePanel {
-            }
-
+Item {
+    width: 300
+    height: 600
+    NetworksPanel {
+        id: networksPanel
+        anchors {
+            top: parent.top
+            bottom: appearancePanel.top
+            left: parent.left
+            right: parent.right
+        }
+        clip: true
     }
+
+    AppearancePanel {
+        id: appearancePanel
+        anchors {
+            bottom: controls.top
+            left: parent.left
+            right: parent.right
+        }
+        clip: true
+    }
+
     ControlsPanel {
-        id : controls
-        Layout.fillWidth: true
+        id: controls
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+        clip: true
     }
 }

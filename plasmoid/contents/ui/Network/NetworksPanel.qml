@@ -19,9 +19,19 @@ FocusScope {
         sourceModel: connectionModel
     }
 
+    Header {
+        id: header
+        text: "Networks"
+    }
     PlasmaExtras.ScrollArea {
         id: scrollView
-        anchors.fill: parent
+        anchors {
+            top: header.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+
         ListView {
             id: connectionView
 
@@ -33,9 +43,8 @@ FocusScope {
             model: appletProxyModel
             currentIndex: -1
             boundsBehavior: Flickable.StopAtBounds
-            section.property: "Section"
-            section.delegate: Header { text: section }
-            delegate: ConnectionItem { }
+            delegate: ConnectionItem {
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ RowLayout {
     PlasmaComponents.ToolButton {
         id: darkModeSwitch
         Layout.alignment: Qt.AlignHCenter
-        iconSource: "dark-mode-symbolic"
+        iconSource: "weather-clear-night"
 
         onClicked: {
             checked = !checked
@@ -56,7 +56,7 @@ RowLayout {
 
         Layout.alignment: Qt.AlignHCenter
         checked: airplaneModeEnabled
-        iconSource: airplaneModeEnabled ? "flightmode-on" : "flightmode-off"
+        iconSource: "airplane-mode-symbolic"
 
         onClicked: {
             airplaneModeEnabled = !airplaneModeEnabled;

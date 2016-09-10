@@ -4,8 +4,13 @@ import QtQuick.Layouts 1.2
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.components 2.0 as PlasmaComponents
 
+import org.kde.plasma.appearance 1.0
+
 FocusScope {
     height: childrenRect.height
+    LookAndFeel {
+        id: lookAndFeel
+    }
     ListModel {
         id: lookAndFeelModel
 
@@ -25,8 +30,6 @@ FocusScope {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        Component.onCompleted: print("content height:", height)
-
         PlasmaComponents.Label {
             id: appearanceLabel
             Layout.fillWidth: true
@@ -34,12 +37,17 @@ FocusScope {
         }
 
         PlasmaComponents.ComboBox {
+            id: lookAndFeelComboBox
             Layout.fillWidth: true
             height: 24
-            model: lookAndFeelModel
+            model: lookAndFeel
+            textRole: "name"
+            currentIndex : lookAndFeel.current;
+            onCurrentIndexChanged : lookAndFeel.current = currentIndex;
             style: CustomComboBoxStyle {
                 entryText: i18n("Default Look and Feel")
             }
+
         }
 
         PlasmaComponents.CheckBox {

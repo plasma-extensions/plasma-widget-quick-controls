@@ -63,7 +63,10 @@ FocusScope {
             id: plasmaThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: lookAndFeelModel
+            model: PlasmaTheme { id: plasmaTheme}
+            currentIndex: plasmaTheme.current
+            onCurrentIndexChanged : plasmaTheme.current = currentIndex;
+            textRole: "packageNameRole"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
                 entryText: i18n("Change Plasma theme")

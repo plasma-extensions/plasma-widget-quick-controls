@@ -3,6 +3,7 @@ configure_file (config-plugin.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-plugin.
 set(plasmoidplugin_SRCS
     plasmoidplugin.cpp
     lookandfeelmodel.cpp
+    plasmathemelistmodel.cpp
     appearance.cpp
 
     krdb.cpp

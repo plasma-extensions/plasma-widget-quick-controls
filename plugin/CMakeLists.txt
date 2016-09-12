@@ -4,6 +4,8 @@ set(plasmoidplugin_SRCS
     plasmoidplugin.cpp
     lookandfeelmodel.cpp
     plasmathemelistmodel.cpp
+    iconsmodel.cpp
+    colorsthememodel.cpp
     appearance.cpp
 
     krdb.cpp

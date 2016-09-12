@@ -77,7 +77,10 @@ FocusScope {
             id: iconThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: lookAndFeelModel
+            model: IconsTheme { id: iconsThemeModel }
+            currentIndex: iconsThemeModel.current
+            onCurrentIndexChanged : iconsThemeModel.current = currentIndex;
+            textRole: "name"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
                 entryText: i18n("Change Icon theme")
@@ -88,7 +91,11 @@ FocusScope {
             id: colorThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: lookAndFeelModel
+            model: ColorsTheme { id: colorsThemeModel }
+            currentIndex: colorsThemeModel.current
+            onCurrentIndexChanged : colorsThemeModel.current = currentIndex;
+            textRole: "name"
+
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
                 entryText: i18n("Change Color theme")

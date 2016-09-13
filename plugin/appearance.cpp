@@ -171,6 +171,7 @@ void Appearance::setCursorTheme(const QString themeName)
                                  i18n("You have to restart KDE for cursor changes to take effect."),
                                  i18n("Cursor Settings Changed"), "CursorSettingsChanged");
 #endif*/
+    KGlobalSettings::self()->emitChange(KGlobalSettings::CursorChanged);
 }
 
 QDir Appearance::cursorThemeDir(const QString &theme, const int depth)

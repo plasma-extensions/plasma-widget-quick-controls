@@ -106,7 +106,10 @@ FocusScope {
             id: widgetsThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: lookAndFeelModel
+            model: WidgetStyleTheme { id: widgetStyleThemeModel }
+            currentIndex: widgetStyleThemeModel.current
+            onCurrentIndexChanged : widgetStyleThemeModel.current = currentIndex;
+            textRole: "name"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
                 entryText: i18n("Change Widget theme")

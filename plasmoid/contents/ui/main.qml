@@ -19,10 +19,10 @@ Item {
     Plasmoid.toolTipMainText: displayName
     Plasmoid.toolTipSubText: ""
 
-    Plasmoid.fullRepresentation:  FullRepresentation { anchors.fill: parent }
+    // Plasmoid.fullRepresentation:  FullRepresentation { anchors.fill: parent }
     Plasmoid.compactRepresentation: CompactRepresentation {}
 
-    Plasmoid.preferredRepresentation: Plasmoid.fullRepresentation
+    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
 
 
     PlasmaNM.NetworkStatus {

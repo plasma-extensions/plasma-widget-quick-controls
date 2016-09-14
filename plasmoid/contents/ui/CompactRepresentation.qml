@@ -12,16 +12,19 @@ PlasmaCore.IconItem {
 
   anchors.fill: parent
 
-  property bool wasExpanded: false
+  SidePanel {
+   id: sidePanel
+   FullRepresentation {}
+  }
 
   MouseArea {
     anchors.fill: parent
-    property bool wasExpanded: false
+    property bool wasExpanded: sidePanel.visible
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton
+
     onPressed: {
-    }
-    onClicked: {
+            sidePanel.display()
     }
   }
 }

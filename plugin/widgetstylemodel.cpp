@@ -30,7 +30,6 @@ WidgetStyleModel::WidgetStyleModel(QObject *parent) :
          }
      }
 
-    qDebug() << list;
     for (QString theme: list) {
         KConfig config(theme, KConfig::SimpleConfig);
         if ( !(config.hasGroup("KDE") && config.hasGroup("Misc")) )
@@ -47,7 +46,6 @@ WidgetStyleModel::WidgetStyleModel(QObject *parent) :
         configGroup = config.group("Misc");
         entry["name"] = configGroup.readEntry("Name");
 
-        qDebug() << entry;
         // Check if this style should be shown
         configGroup = config.group("Desktop Entry");
         bool hidden = configGroup.readEntry("Hidden", false);
@@ -73,14 +71,20 @@ void WidgetStyleModel::setCurrent(int current) {
     if (current < 0 || current > entries.size())
         return;
     QString style = entries[current]["name"].toString();
+    applyWidgetStyle(style);
+}
 
-    // qDebug() << "Setting style " << style;
+bool WidgetStyleModel::applyWidgetStyle(const QString &style) {
+    qDebug() << "Setting widget Style " << style;
     KConfig m_config(QStringLiteral("kdeglobals"));
     KConfigGroup m_configGroup(m_config.group("KDE"));
     m_configGroup.writeEntry("widgetStyle", style);
     m_configGroup.sync();
+
     //FIXME: changing style on the fly breaks QQuickWidgets
     KGlobalSettings::self()->emitChange(KGlobalSettings::StyleChanged);
+
+    return true;
 }
 
 

@@ -33,6 +33,8 @@ public:
     int current();
     void setCurrent(int current);
 
+    static void applyIconsTheme(const QString &themeId);
+
 signals:
     void currentChanged();
 

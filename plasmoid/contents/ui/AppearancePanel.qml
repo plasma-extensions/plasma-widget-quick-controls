@@ -4,27 +4,10 @@ import QtQuick.Layouts 1.2
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.components 2.0 as PlasmaComponents
 
-import org.kde.plasma.appearance 1.0
+import org.kde.plasma.appearance 1.0 as Appearance
 
 FocusScope {
     height: childrenRect.height
-    LookAndFeel {
-        id: lookAndFeel
-    }
-    ListModel {
-        id: lookAndFeelModel
-
-        ListElement {
-            name: "Breeze"
-        }
-        ListElement {
-            name: "Breeze-Dark"
-        }
-        ListElement {
-            name: "Oxygen"
-        }
-    }
-
     ColumnLayout {
         id: content
         anchors.left: parent.left
@@ -40,10 +23,14 @@ FocusScope {
             id: lookAndFeelComboBox
             Layout.fillWidth: true
             height: 24
-            model: lookAndFeel
+            model: Appearance.LookAndFeel
             textRole: "name"
-            currentIndex : lookAndFeel.current;
-            onCurrentIndexChanged : lookAndFeel.current = currentIndex;
+            currentIndex : Appearance.LookAndFeel.current;
+            onCurrentIndexChanged : {
+                if (Appearance.LookAndFeel.current  !== currentIndex)
+                    Appearance.LookAndFeel.current = currentIndex
+            }
+
             style: CustomComboBoxStyle {
                 entryText: i18n("Default Look and Feel")
             }
@@ -63,9 +50,13 @@ FocusScope {
             id: plasmaThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: PlasmaTheme { id: plasmaTheme}
-            currentIndex: plasmaTheme.current
-            onCurrentIndexChanged : plasmaTheme.current = currentIndex;
+            model: Appearance.PlasmaTheme
+            currentIndex: Appearance.PlasmaTheme.current
+            onCurrentIndexChanged : {
+                if (Appearance.PlasmaTheme.current  !== currentIndex)
+                    Appearance.PlasmaTheme.current = currentIndex
+            }
+
             textRole: "packageNameRole"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
@@ -77,9 +68,12 @@ FocusScope {
             id: iconThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: IconsTheme { id: iconsThemeModel }
-            currentIndex: iconsThemeModel.current
-            onCurrentIndexChanged : iconsThemeModel.current = currentIndex;
+            model: Appearance.IconsTheme
+            currentIndex: Appearance.IconsTheme.current
+            onCurrentIndexChanged : {
+                if (Appearance.IconsTheme.current  !== currentIndex)
+                    Appearance.IconsTheme.current = currentIndex
+            }
             textRole: "name"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
@@ -91,9 +85,12 @@ FocusScope {
             id: colorThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: ColorsTheme { id: colorsThemeModel }
-            currentIndex: colorsThemeModel.current
-            onCurrentIndexChanged : colorsThemeModel.current = currentIndex;
+            model: Appearance.ColorsTheme
+            currentIndex: Appearance.ColorsTheme.current
+            onCurrentIndexChanged : {
+                if (Appearance.ColorsTheme.current  !== currentIndex)
+                    Appearance.ColorsTheme.current = currentIndex
+            }
             textRole: "name"
 
             visible: showExtraSettingsCheckBox.checked
@@ -106,9 +103,12 @@ FocusScope {
             id: widgetsThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: WidgetStyleTheme { id: widgetStyleThemeModel }
-            currentIndex: widgetStyleThemeModel.current
-            onCurrentIndexChanged : widgetStyleThemeModel.current = currentIndex;
+            model: Appearance.WidgetStyleTheme
+            currentIndex: Appearance.WidgetStyleTheme.current
+            onCurrentIndexChanged : {
+                if (Appearance.WidgetStyleTheme.current  !== currentIndex)
+                    Appearance.WidgetStyleTheme.current = currentIndex
+            }
             textRole: "name"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
@@ -120,9 +120,12 @@ FocusScope {
             id: cursorThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: CursorTheme {id: cursorThemeModel }
-            currentIndex: cursorThemeModel.current
-            onCurrentIndexChanged : cursorThemeModel.current = currentIndex;
+            model: Appearance.CursorTheme
+            currentIndex: Appearance.CursorTheme.current
+            onCurrentIndexChanged : {
+                if (Appearance.CursorTheme.current  !== currentIndex)
+                    Appearance.CursorTheme.current = currentIndex
+            }
             textRole: "name"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {

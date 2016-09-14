@@ -66,12 +66,13 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QModelIndex indexOf(const QString &path) const;
-    void reload();
+    void refresh();
     void clearThemeList();
 
     int current() const;
     void setCurrent(int current);
     Q_INVOKABLE QVariantMap get(int index) const;
+
 
 Q_SIGNALS:
     void currentChanged();

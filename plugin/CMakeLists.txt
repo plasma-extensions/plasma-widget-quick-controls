@@ -11,7 +11,6 @@ set(plasmoidplugin_SRCS
     widgetstylemodel.cpp
     iconsmodel.cpp
     colorsthememodel.cpp
-    appearance.cpp
 
     krdb.cpp
     cursorthememodel.cpp

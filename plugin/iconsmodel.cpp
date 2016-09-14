@@ -22,8 +22,6 @@ IconsModel::IconsModel(QObject *parent) :
         if (!icontheme.isValid()) qDebug() << "not a valid theme" << themeName;
         if (icontheme.isHidden()) continue;
 
-        qDebug() << icontheme.name();
-        qDebug() << themeName;
         QVariantMap entry;
         entry["name"] = icontheme.name();
         entry["internalName"] = themeName;
@@ -46,8 +44,14 @@ int IconsModel::current()
 
 void IconsModel::setCurrent(int current)
 {
+    QString themeId = entries.at(current)["internalName"].toString();
+    applyIconsTheme(themeId);
+}
+
+void IconsModel::applyIconsTheme(const QString &themeId)
+{
     KConfigGroup config(KSharedConfig::openConfig(QStringLiteral("kdeglobals"), KConfig::SimpleConfig), "Icons");
-    config.writeEntry("Theme", entries.at(current)["internalName"] );
+    config.writeEntry("Theme",  themeId);
     config.sync();
 
     KIconTheme::reconfigure();

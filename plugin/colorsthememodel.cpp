@@ -51,7 +51,6 @@ ColorsThemeModel::ColorsThemeModel(QObject *parent) :
         entry["fileName"] = filename;
         entry["name"] = info.baseName();
 
-        // qDebug() << entry;
         entries.append(entry);
     }
 }
@@ -73,17 +72,25 @@ void ColorsThemeModel::setCurrent(int current)
     if (current >= entries.size() || current < 0)
         return;
 
+    QString colorScheme = entries[current]["name"].toString();
+    QString file = entries[current]["fileName"].toString();
+
+    applyColorsScheme(colorScheme, file);
+}
+
+void ColorsThemeModel::applyColorsScheme(const QString &colorScheme, const QString &colorFile)
+{
     KConfig m_config(QStringLiteral("kdeglobals"));
     KConfigGroup configGroup(&m_config, "General");
-    configGroup.writeEntry("ColorScheme", entries[current]["name"]);
+    configGroup.writeEntry("ColorScheme", colorScheme);
     configGroup.sync();
 
-    KSharedConfigPtr conf = KSharedConfig::openConfig(entries[current]["fileName"].toString());
+    KSharedConfigPtr conf = KSharedConfig::openConfig(colorFile);
     for (const QString &grp : conf->groupList()) {
-      KConfigGroup cg(conf, grp);
-      KConfigGroup cg2(&m_config, grp);
-      cg.copyTo(&cg2);
-  }
+        KConfigGroup cg(conf, grp);
+        KConfigGroup cg2(&m_config, grp);
+        cg.copyTo(&cg2);
+    }
 
     runRdb(KRdbExportQtColors | KRdbExportGtkTheme |  KRdbExportColors );
 
@@ -98,8 +105,8 @@ void ColorsThemeModel::setCurrent(int current)
     message =
             QDBusMessage::createSignal(QStringLiteral("/KWin"), QStringLiteral("org.kde.KWin"), QStringLiteral("reloadConfig"));
     QDBusConnection::sessionBus().send(message);
-
 }
+
 
 
 QHash< int, QByteArray > ColorsThemeModel::roleNames() const {
@@ -115,17 +122,17 @@ int ColorsThemeModel::rowCount(const QModelIndex&) const {
     return entries.size();
 }
 
- QVariant ColorsThemeModel::data(const QModelIndex& index, int role) const {
-     if (!index.isValid() || index.parent().isValid() ||
-         index.column() > 0 || index.row() < 0 || index.row() >= entries.size()) {
-         // index requested must be valid, but we have no child items!
-         return QVariant();
-     }
+QVariant ColorsThemeModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid() || index.parent().isValid() ||
+            index.column() > 0 || index.row() < 0 || index.row() >= entries.size()) {
+        // index requested must be valid, but we have no child items!
+        return QVariant();
+    }
 
-     switch(role) {
-         case Qt::DisplayRole:
-         case Name:
-             return entries.at(index.row())["name"];
-     }
-     return QVariant();
- }
+    switch(role) {
+    case Qt::DisplayRole:
+    case Name:
+        return entries.at(index.row())["name"];
+    }
+    return QVariant();
+}

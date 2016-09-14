@@ -33,6 +33,7 @@ public:
     int current();
     void setCurrent(int current);
 
+    static void applyColorsScheme(const QString &colorScheme, const QString &colorFile);
 signals:
     void currentChanged();
 

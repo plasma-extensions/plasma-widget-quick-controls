@@ -1,36 +1,31 @@
-/*
- * Copyright © 2005-2007 Fredrik Höglund <fredrik@kde.org>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
- */
 
+#include <QStringList>
+#include <QX11Info>
+#include <QDir>
+#include <QDebug>
 
 #include <KLocalizedString>
-#include <KConfig>
+#include <KGlobalSettings>
 #include <KConfigGroup>
-#include <QStringList>
-#include <QDir>
-#include <QX11Info>
-#include <QDebug>
+#include <KConfig>
+
+#include <klauncher_iface.h>
 
 #include "cursorthememodel.h"
 #include "xcursor/xcursortheme.h"
-#include "appearance.h"
+#include "xcursor/cursortheme.h"
+#include "krdb.h"
 
-#include <X11/Xlib.h>
-#include <X11/Xcursor/Xcursor.h>
+#include "config-X11.h"
+#ifdef HAVE_X11
+    #include <X11/Xlib.h>
+    #include <X11/Xcursor/Xcursor.h>
+#endif
+
+#ifdef HAVE_XFIXES
+#  include <X11/Xlib.h>
+#  include <X11/extensions/Xfixes.h>
+#endif
 
 // Check for older version
 #if !defined(XCURSOR_LIB_MAJOR) && defined(XCURSOR_MAJOR)
@@ -38,7 +33,7 @@
 #  define XCURSOR_LIB_MINOR XCURSOR_MINOR
 #endif
 
-
+QStringList CursorThemeModel::baseDirs;
 
 CursorThemeModel::CursorThemeModel(QObject *parent)
     : QAbstractTableModel(parent)
@@ -48,8 +43,8 @@ CursorThemeModel::CursorThemeModel(QObject *parent)
 
 CursorThemeModel::~CursorThemeModel()
 {
-   qDeleteAll(list);
-   list.clear();
+    qDeleteAll(list);
+    list.clear();
 }
 
 void CursorThemeModel::refreshList()
@@ -80,8 +75,74 @@ int CursorThemeModel::current()
 
 void CursorThemeModel::setCurrent(int current)
 {
-    bool result = Appearance::applyCursorTheme(list.at(current), 24);
-    // qDebug() << "Setting cursor theme" << list.at(current)->name() << result;
+    bool result = applyCursorTheme(list.at(current), 24);
+    qDebug() << "Setting cursor theme" << list.at(current)->name() << result;
+}
+
+bool CursorThemeModel::applyCursorTheme(const CursorTheme *theme, const int size)
+{
+    // Require the Xcursor version that shipped with X11R6.9 or greater, since
+    // in previous versions the Xfixes code wasn't enabled due to a bug in the
+    // build system (freedesktop bug #975).
+#if HAVE_XFIXES && XFIXES_MAJOR >= 2 && XCURSOR_LIB_VERSION >= 10105
+    if (!theme)
+        return false;
+
+    if (!CursorTheme::haveXfixes())
+        return false;
+
+    QByteArray themeName = QFile::encodeName(theme->name());
+
+    // Set up the proper launch environment for newly started apps
+    OrgKdeKLauncherInterface klauncher(QStringLiteral("org.kde.klauncher5"),
+                                       QStringLiteral("/KLauncher"),
+                                       QDBusConnection::sessionBus());
+    klauncher.setLaunchEnv(QStringLiteral("XCURSOR_THEME"), themeName);
+
+    // Update the Xcursor X resources
+    runRdb(0);
+
+    // Notify all applications that the cursor theme has changed
+    KGlobalSettings::self()->emitChange(KGlobalSettings::CursorChanged);
+
+    // Reload the standard cursors
+    QStringList names;
+
+    // Qt cursors
+    names << QStringLiteral("left_ptr")       << QStringLiteral("up_arrow")      << QStringLiteral("cross")      << QStringLiteral("wait")
+          << QStringLiteral("left_ptr_watch") << QStringLiteral("ibeam")         << QStringLiteral("size_ver")   << QStringLiteral("size_hor")
+          << QStringLiteral("size_bdiag")     << QStringLiteral("size_fdiag")    << QStringLiteral("size_all")   << QStringLiteral("split_v")
+          << QStringLiteral("split_h")        << QStringLiteral("pointing_hand") << QStringLiteral("openhand")
+          << QStringLiteral("closedhand")     << QStringLiteral("forbidden")     << QStringLiteral("whats_this") << QStringLiteral("copy") << QStringLiteral("move") << QStringLiteral("link");
+
+    // X core cursors
+    names << QStringLiteral("X_cursor")            << QStringLiteral("right_ptr")           << QStringLiteral("hand1")
+          << QStringLiteral("hand2")               << QStringLiteral("watch")               << QStringLiteral("xterm")
+          << QStringLiteral("crosshair")           << QStringLiteral("left_ptr_watch")      << QStringLiteral("center_ptr")
+          << QStringLiteral("sb_h_double_arrow")   << QStringLiteral("sb_v_double_arrow")   << QStringLiteral("fleur")
+          << QStringLiteral("top_left_corner")     << QStringLiteral("top_side")            << QStringLiteral("top_right_corner")
+          << QStringLiteral("right_side")          << QStringLiteral("bottom_right_corner") << QStringLiteral("bottom_side")
+          << QStringLiteral("bottom_left_corner")  << QStringLiteral("left_side")           << QStringLiteral("question_arrow")
+          << QStringLiteral("pirate");
+
+    foreach (const QString &name, names)
+    {
+        XFixesChangeCursorByName(QX11Info::display(), theme->loadCursor(name, size), QFile::encodeName(name));
+    }
+
+    return true;
+#else
+    Q_UNUSED(theme)
+    return false;
+#endif
+
+}
+
+bool CursorThemeModel::applyCursorTheme(const QString &themeName, const int size)
+{
+    QDir themeDir= cursorThemeDir(themeName, 0);
+    XCursorTheme cursorTheme(themeDir);
+    return applyCursorTheme(&cursorTheme, size);
 }
 
 QVariant CursorThemeModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -95,13 +156,13 @@ QVariant CursorThemeModel::headerData(int section, Qt::Orientation orientation, 
     {
         switch (section)
         {
-            case NameColumn:
-                return i18n("Name");
+        case NameColumn:
+            return i18n("Name");
 
-            case DescColumn:
-                return i18n("Description");
+        case DescColumn:
+            return i18n("Description");
 
-            default: return QVariant();
+        default: return QVariant();
         }
     }
 
@@ -122,13 +183,13 @@ QVariant CursorThemeModel::data(const QModelIndex &index, int role) const
     {
         switch (index.column())
         {
-            case NameColumn:
-                return theme->title();
+        case NameColumn:
+            return theme->title();
 
-            case DescColumn:
-                return theme->description();
+        case DescColumn:
+            return theme->description();
 
-            default: return QVariant();
+        default: return QVariant();
         }
     }
 
@@ -306,7 +367,7 @@ bool CursorThemeModel::handleDefault(const QDir &themeDir)
 
     // If there's no cursors subdir, or if it's empty
     if (!themeDir.exists(QStringLiteral("cursors")) || QDir(themeDir.path() + "/cursors")
-          .entryList(QDir::Files | QDir::NoDotAndDotDot ).isEmpty())
+            .entryList(QDir::Files | QDir::NoDotAndDotDot ).isEmpty())
     {
         if (themeDir.exists(QStringLiteral("index.theme")))
         {
@@ -451,3 +512,57 @@ void CursorThemeModel::removeTheme(const QModelIndex &index)
     endRemoveRows();
 }
 
+QDir CursorThemeModel::cursorThemeDir(const QString &theme, const int depth)
+{
+    // Prevent infinite recursion
+    if (depth > 10) {
+        return QDir();
+    }
+
+    // Search each icon theme directory for 'theme'
+    foreach (const QString &baseDir, searchPaths()) {
+        QDir dir(baseDir);
+        if (!dir.exists() || !dir.cd(theme)) {
+            continue;
+        }
+
+        // If there's a cursors subdir, we'll assume this is a cursor theme
+        if (dir.exists(QStringLiteral("cursors"))) {
+            return dir;
+        }
+
+        // If the theme doesn't have an index.theme file, it can't inherit any themes.
+        if (!dir.exists(QStringLiteral("index.theme"))) {
+            continue;
+        }
+
+        // Open the index.theme file, so we can get the list of inherited themes
+        KConfig config(dir.path() + "/index.theme", KConfig::NoGlobals);
+        KConfigGroup cg(&config, "Icon Theme");
+
+        // Recurse through the list of inherited themes, to check if one of them
+        // is a cursor theme.
+        QStringList inherits = cg.readEntry("Inherits", QStringList());
+        foreach (const QString &inherit, inherits) {
+            // Avoid possible DoS
+            if (inherit == theme) {
+                continue;
+            }
+
+            if (cursorThemeDir(inherit, depth + 1).exists()) {
+                return dir;
+            }
+        }
+    }
+
+    return QDir();
+}
+int CursorThemeModel::rowCount(const QModelIndex &) const
+{
+    return list.count();
+}
+
+int CursorThemeModel::columnCount(const QModelIndex &) const
+{
+    return 2;
+}

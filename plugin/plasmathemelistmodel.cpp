@@ -47,7 +47,7 @@ PlasmaThemeListModel::PlasmaThemeListModel( QObject *parent )
     m_roleNames.insert(PackageAuthorRole, "packageAuthorRole");
     m_roleNames.insert(PackageVersionRole, "packageVersionRole");
 
-    reload();
+    refresh();
     connect(&m_defaultTheme, &Plasma::Theme::themeChanged, this, &PlasmaThemeListModel::currentChanged);
 }
 
@@ -83,7 +83,7 @@ void PlasmaThemeListModel::setCurrent(int current)
     emit(currentChanged());
 }
 
-void PlasmaThemeListModel::reload()
+void PlasmaThemeListModel::refresh()
 {
     reset();
     clearThemeList();

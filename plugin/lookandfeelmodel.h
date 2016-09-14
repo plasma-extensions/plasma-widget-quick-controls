@@ -33,11 +33,17 @@ public:
     int current();
     void setCurrent(int current);
 
+    void refresh();
+
+    static void setSplashScreen(const QString &theme);
+    static void setLockScreen(const QString &theme);
+    static void setWindowSwitcher(const QString &theme);
+    static void setDesktopSwitcher(const QString &theme);
+
 signals:
     void currentChanged();
 
 private:
-    int _current;
     QList<QVariantMap> entries;
 };
 

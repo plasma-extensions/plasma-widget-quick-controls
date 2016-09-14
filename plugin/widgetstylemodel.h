@@ -32,6 +32,7 @@ public:
     int current();
     void setCurrent(int current);
 
+    static bool applyWidgetStyle(const QString &style);
 signals:
     void currentChanged();
 

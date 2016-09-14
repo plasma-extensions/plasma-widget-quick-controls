@@ -62,8 +62,8 @@ class CursorThemeModel : public QAbstractTableModel
     public:
         CursorThemeModel(QObject *parent = 0);
         ~CursorThemeModel();
-       inline int columnCount(const QModelIndex &parent = QModelIndex()) const;
-        inline int rowCount(const QModelIndex &parent = QModelIndex()) const;
+        int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+        int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
         QVariant headerData(int section, Qt::Orientation orientation, int role) const;
         QVariant data(const QModelIndex &index, int role) const;
         void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
@@ -84,7 +84,7 @@ class CursorThemeModel : public QAbstractTableModel
         void removeTheme(const QModelIndex &index);
 
         /// Returns the list of base dirs Xcursor looks for themes in.
-        const QStringList searchPaths();
+        static const QStringList searchPaths();
 
         /// Refresh the list of themes by checking what's on disk.
         void refreshList();
@@ -92,6 +92,8 @@ class CursorThemeModel : public QAbstractTableModel
         int current();
         void setCurrent(int current);
 
+        static bool applyCursorTheme(const CursorTheme *theme, const int size);
+        static bool applyCursorTheme(const QString &themeName, const int size);
     signals:
         void currentChanged();
 
@@ -104,18 +106,11 @@ class CursorThemeModel : public QAbstractTableModel
 
     private:
         QList<CursorTheme*> list;
-        QStringList baseDirs;
+        static QStringList baseDirs;
         QString defaultName;
+
+        static QDir cursorThemeDir(const QString &theme, const int depth);
 };
 
-int CursorThemeModel::rowCount(const QModelIndex &) const
-{
-    return list.count();
-}
-
-int CursorThemeModel::columnCount(const QModelIndex &) const
-{
-    return 2;
-}
 
 #endif // THEMEMODEL_H

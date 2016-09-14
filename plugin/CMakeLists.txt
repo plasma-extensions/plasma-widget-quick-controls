@@ -1,4 +1,8 @@
+# Check X11 functions
+macro_bool_to_01(X11_Xfixes_FOUND HAVE_XFIXES)
+
 configure_file (config-plugin.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-plugin.h )
+configure_file(config-X11.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-X11.h)
 
 set(plasmoidplugin_SRCS
     plasmoidplugin.cpp
@@ -10,6 +14,7 @@ set(plasmoidplugin_SRCS
     appearance.cpp
 
     krdb.cpp
+    cursorthememodel.cpp
     xcursor/cursortheme.cpp
     xcursor/xcursortheme.cpp
 

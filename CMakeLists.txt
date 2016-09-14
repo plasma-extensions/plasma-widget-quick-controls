@@ -22,7 +22,6 @@ set_package_properties(X11 PROPERTIES DESCRIPTION "X11 libraries"
                         PURPOSE "Required for building the X11 based workspace"
                       )
 
-
 plasma_install_package(plasmoid org.plasma-light.quick-controls)
 
 file(GLOB_RECURSE PLASMOID_SRCS "plasmoid/*")

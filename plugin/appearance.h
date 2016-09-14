@@ -7,6 +7,8 @@
 #include <KConfig>
 #include <KConfigGroup>
 
+class CursorTheme;
+
 class Appearance
 {
 public:
@@ -26,6 +28,7 @@ public:
     void setWindowSwitcher(const QString &theme);
     void setDesktopSwitcher(const QString &theme);
 
+    static bool applyCursorTheme(const CursorTheme *theme, const int size);
 private:
     QDir cursorThemeDir(const QString &theme, const int depth);
     const QStringList cursorSearchPaths();

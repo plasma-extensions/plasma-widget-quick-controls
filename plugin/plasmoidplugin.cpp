@@ -9,6 +9,7 @@
 #include "iconsmodel.h"
 #include "colorsthememodel.h"
 #include "widgetstylemodel.h"
+#include "cursorthememodel.h"
 
 void PlasmoidPlugin::registerTypes(const char *uri)
 {
@@ -19,4 +20,5 @@ void PlasmoidPlugin::registerTypes(const char *uri)
     qmlRegisterType<IconsModel>(uri, 1, 0, "IconsTheme");
     qmlRegisterType<ColorsThemeModel>(uri, 1, 0, "ColorsTheme");
     qmlRegisterType<WidgetStyleModel>(uri, 1, 0, "WidgetStyleTheme");
+    qmlRegisterType<CursorThemeModel>(uri, 1, 0, "CursorTheme");
 }

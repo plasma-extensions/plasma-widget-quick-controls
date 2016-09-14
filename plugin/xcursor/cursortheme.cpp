@@ -26,7 +26,7 @@
 
 #include "cursortheme.h"
 
-//#include <config-X11.h>
+#include <config-X11.h>
 
 #ifdef HAVE_XFIXES
 #  include <X11/Xlib.h>

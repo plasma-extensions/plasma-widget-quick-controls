@@ -34,6 +34,7 @@
 //#endif
 
 #include "config-plugin.h"
+#include "config-X11.h"
 #include "xcursor/xcursortheme.h"
 #include "krdb.h"
 
@@ -470,4 +471,62 @@ QList<Plasma::Package> Appearance::availablePackages(const QString &component)
     }
 
     return packages;
+}
+
+bool Appearance::applyCursorTheme(const CursorTheme *theme, const int size)
+{
+    // Require the Xcursor version that shipped with X11R6.9 or greater, since
+    // in previous versions the Xfixes code wasn't enabled due to a bug in the
+    // build system (freedesktop bug #975).
+#if XFIXES_MAJOR >= 2 && XCURSOR_LIB_VERSION >= 10105
+    if (!theme)
+        return false;
+
+    if (!CursorTheme::haveXfixes())
+        return false;
+
+    QByteArray themeName = QFile::encodeName(theme->name());
+
+    // Set up the proper launch environment for newly started apps
+    OrgKdeKLauncherInterface klauncher(QStringLiteral("org.kde.klauncher5"),
+                                       QStringLiteral("/KLauncher"),
+                                       QDBusConnection::sessionBus());
+    klauncher.setLaunchEnv(QStringLiteral("XCURSOR_THEME"), themeName);
+
+    // Update the Xcursor X resources
+    runRdb(0);
+
+    // Notify all applications that the cursor theme has changed
+    KGlobalSettings::self()->emitChange(KGlobalSettings::CursorChanged);
+
+    // Reload the standard cursors
+    QStringList names;
+
+    // Qt cursors
+    names << QStringLiteral("left_ptr")       << QStringLiteral("up_arrow")      << QStringLiteral("cross")      << QStringLiteral("wait")
+          << QStringLiteral("left_ptr_watch") << QStringLiteral("ibeam")         << QStringLiteral("size_ver")   << QStringLiteral("size_hor")
+          << QStringLiteral("size_bdiag")     << QStringLiteral("size_fdiag")    << QStringLiteral("size_all")   << QStringLiteral("split_v")
+          << QStringLiteral("split_h")        << QStringLiteral("pointing_hand") << QStringLiteral("openhand")
+          << QStringLiteral("closedhand")     << QStringLiteral("forbidden")     << QStringLiteral("whats_this") << QStringLiteral("copy") << QStringLiteral("move") << QStringLiteral("link");
+
+    // X core cursors
+    names << QStringLiteral("X_cursor")            << QStringLiteral("right_ptr")           << QStringLiteral("hand1")
+          << QStringLiteral("hand2")               << QStringLiteral("watch")               << QStringLiteral("xterm")
+          << QStringLiteral("crosshair")           << QStringLiteral("left_ptr_watch")      << QStringLiteral("center_ptr")
+          << QStringLiteral("sb_h_double_arrow")   << QStringLiteral("sb_v_double_arrow")   << QStringLiteral("fleur")
+          << QStringLiteral("top_left_corner")     << QStringLiteral("top_side")            << QStringLiteral("top_right_corner")
+          << QStringLiteral("right_side")          << QStringLiteral("bottom_right_corner") << QStringLiteral("bottom_side")
+          << QStringLiteral("bottom_left_corner")  << QStringLiteral("left_side")           << QStringLiteral("question_arrow")
+          << QStringLiteral("pirate");
+
+    foreach (const QString &name, names)
+    {
+        XFixesChangeCursorByName(QX11Info::display(), theme->loadCursor(name, size), QFile::encodeName(name));
+    }
+
+    return true;
+#else
+    Q_UNUSED(theme)
+    return false;
+#endif
 }

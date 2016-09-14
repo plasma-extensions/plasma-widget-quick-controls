@@ -120,8 +120,10 @@ FocusScope {
             id: cursorThemeComboBox
             height: 28
             Layout.fillWidth: true
-            model: lookAndFeelModel
-
+            model: CursorTheme {id: cursorThemeModel }
+            currentIndex: cursorThemeModel.current
+            onCurrentIndexChanged : cursorThemeModel.current = currentIndex;
+            textRole: "name"
             visible: showExtraSettingsCheckBox.checked
             style: CustomComboBoxStyle {
                 entryText: i18n("Change Mouse Cursor theme")

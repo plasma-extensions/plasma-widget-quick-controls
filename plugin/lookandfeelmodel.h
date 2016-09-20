@@ -16,7 +16,6 @@ class LookAndFeelModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int current READ current WRITE setCurrent NOTIFY currentChanged)
-
 public:
     enum Roles {
         Name = Qt::UserRole + 1,

@@ -132,6 +132,8 @@ void LookAndFeelModel::setCurrent(int current)
     setLockScreen(pluginId);
 
     m_configGroup.sync();
+
+    Q_EMIT(currentChanged());
 }
 
 void LookAndFeelModel::refresh()

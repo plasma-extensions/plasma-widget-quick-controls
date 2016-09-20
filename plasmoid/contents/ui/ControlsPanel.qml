@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.2
 
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.appearance 1.0 as Appearance
+import org.kde.plasma.private.bluetooth 1.0 as PlasmaBt
 
 RowLayout {
     spacing: 12
@@ -25,8 +26,17 @@ RowLayout {
         Layout.alignment: Qt.AlignHCenter
         iconSource: "network-bluetooth"
 
+        checked: btManager.bluetoothOperational
+        enabled: btManager.bluetoothBlocked || btManager.adapters.length
         onClicked: {
             checked = !checked
+            var enable = !btManager.bluetoothOperational;
+            btManager.bluetoothBlocked = !enable;
+
+            for (var i = 0; i < btManager.adapters.length; ++i) {
+                var adapter = btManager.adapters[i];
+                adapter.powered = enable;
+            }
         }
     }
 

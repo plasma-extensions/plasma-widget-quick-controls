@@ -6,8 +6,8 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.components 2.0 as PlasmaComponents
 
-
 import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
+import org.kde.bluezqt 1.0 as BluezQt
 
 Item {
     Layout.fillWidth: true
@@ -24,6 +24,9 @@ Item {
 
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
 
+    property bool deviceConnected : false
+    property int runningActions : 0
+    property QtObject btManager : BluezQt.Manager
 
     PlasmaNM.NetworkStatus {
         id: networkStatus

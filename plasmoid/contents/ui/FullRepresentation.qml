@@ -4,19 +4,35 @@ import org.kde.plasma.extras 2.0 as PlasmaExtras
 
 import "Network"
 import "Devices"
+import "Bluetooth"
 
 Item {
     width: 300
     height: 600
-    NetworksPanel {
-        id: networksPanel
+    ColumnLayout {
         anchors {
             top: parent.top
             bottom: appearancePanel.top
             left: parent.left
             right: parent.right
         }
-        clip: true
+
+        NetworksPanel {
+            id: networksPanel
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumHeight: childrenRect.height
+            Layout.maximumHeight: childrenRect.height
+
+            clip: true
+        }
+
+        BluetoothPanel {
+            id: bluetoothPanel
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            clip: true
+        }
     }
 
     AppearancePanel {

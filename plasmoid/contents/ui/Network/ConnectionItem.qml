@@ -31,7 +31,6 @@ PlasmaComponents.ListItem {
 
     property bool activating: ConnectionState == PlasmaNM.Enums.Activating;
     property int  baseHeight: connectionItemBase.height
-    property bool expanded: visibleDetails || visiblePasswordDialog
     property bool predictableWirelessPassword: !Uuid && Type == PlasmaNM.Enums.Wireless &&
                                                (SecurityType == PlasmaNM.Enums.StaticWep || SecurityType == PlasmaNM.Enums.WpaPsk ||
                                                 SecurityType == PlasmaNM.Enums.Wpa2Psk)
@@ -41,12 +40,12 @@ PlasmaComponents.ListItem {
                               Type == PlasmaNM.Enums.Wireless ||
                               Type == PlasmaNM.Enums.Gsm ||
                               Type == PlasmaNM.Enums.Cdma)
-    property bool visibleDetails: false
+
     property bool visiblePasswordDialog: false
 
     checked: connectionItem.containsMouse
     enabled: true
-    height: expanded ? baseHeight + expandableComponentLoader.height + Math.round(units.gridUnit / 3) : baseHeight
+    height: baseHeight
 
     PlasmaCore.DataSource {
         id: dataSource
@@ -141,7 +140,7 @@ PlasmaComponents.ListItem {
                 rightMargin: Math.round(units.gridUnit / 2)
                 verticalCenter: connectionSvgIcon.verticalCenter
             }
-            opacity: connectionView.currentVisibleButtonIndex == index ? 1 : 0
+            opacity: connectionItem.containsMouse ? 1 : 0
             visible: opacity != 0
             text: (ConnectionState == PlasmaNM.Enums.Deactivated) ? i18n("Connect") : i18n("Disconnect")
 
@@ -151,6 +150,15 @@ PlasmaComponents.ListItem {
         }
     }
 
+    Loader {
+        id: expandableComponentLoader
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: connectionItemBase.bottom
+        }
+    }
 
     Component {
         id: passwordDialogComponent
@@ -224,17 +232,12 @@ PlasmaComponents.ListItem {
         }
     }
 
+
     states: [
         State {
             name: "collapsed"
-            when: !(visibleDetails || visiblePasswordDialog)
+            when: !(visiblePasswordDialog)
             StateChangeScript { script: if (expandableComponentLoader.status == Loader.Ready) {expandableComponentLoader.sourceComponent = undefined} }
-        },
-
-        State {
-            name: "expandedDetails"
-            when: visibleDetails
-            StateChangeScript { script: createContent() }
         },
 
         State {
@@ -246,16 +249,13 @@ PlasmaComponents.ListItem {
     ]
 
     function createContent() {
-        if (visibleDetails) {
-            expandableComponentLoader.sourceComponent = detailsComponent;
-        } else if (visiblePasswordDialog) {
+        if (visiblePasswordDialog) {
             expandableComponentLoader.sourceComponent = passwordDialogComponent;
             expandableComponentLoader.item.passwordFocus.forceActiveFocus();
         }
     }
 
     function changeState() {
-        visibleDetails = false
         if (Uuid || !predictableWirelessPassword || visiblePasswordDialog) {
             if (ConnectionState == PlasmaNM.Enums.Deactivated) {
                 if (!predictableWirelessPassword && !Uuid) {
@@ -342,20 +342,12 @@ PlasmaComponents.ListItem {
     onClicked: {
         if (visiblePasswordDialog) {
             visiblePasswordDialog = false
-        } else {
-            visibleDetails = !visibleDetails
         }
 
-        if (visibleDetails || visiblePasswordDialog) {
+        if (visiblePasswordDialog) {
             ListView.view.currentIndex = index
         } else {
             ListView.view.currentIndex = -1
-        }
-    }
-
-    onContainsMouseChanged: {
-        if (connectionItem.containsMouse) {
-            connectionView.currentVisibleButtonIndex = index
         }
     }
 }

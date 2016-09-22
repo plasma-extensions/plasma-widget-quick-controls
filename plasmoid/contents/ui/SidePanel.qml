@@ -28,7 +28,7 @@ PlasmaCore.Dialog {
             // TODO: find a way to resolve the inner dialog maring and remove the "- 12"
             // Uri: I've changed the value to / 1.03 it seems to me this value keeps the sidepanel from covering the Plasma panel even at resolutions
             // as low as 800x600. Use / 1.03 for Chromeo theme.
-            // Uri: I discovered that dependingon the theme the borders of the widgets are wider or thinner. In Breeze the values of y: 1 and - 15 below set the sidepanel just above the default panel size of 34 pixels.
+            // Uri: I discovered that depending on the theme the borders of the widgets are wider or thinner. In Breeze the values of y: 1 and - 15 below set the sidepanel just above the default panel size of 34 pixels.
             return Screen.desktopAvailableHeight - 15
         })
     }

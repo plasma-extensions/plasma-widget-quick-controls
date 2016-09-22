@@ -29,23 +29,25 @@ import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
 PlasmaComponents.ListItem {
     id: connectionItem
 
-    property bool activating: ConnectionState == PlasmaNM.Enums.Activating;
-    property int  baseHeight: connectionItemBase.height
-    property bool predictableWirelessPassword: !Uuid && Type == PlasmaNM.Enums.Wireless &&
-                                               (SecurityType == PlasmaNM.Enums.StaticWep || SecurityType == PlasmaNM.Enums.WpaPsk ||
-                                                SecurityType == PlasmaNM.Enums.Wpa2Psk)
-    property bool showSpeed: ConnectionState == PlasmaNM.Enums.Activated &&
-                             (Type == PlasmaNM.Enums.Wimax ||
-                              Type == PlasmaNM.Enums.Wired ||
-                              Type == PlasmaNM.Enums.Wireless ||
-                              Type == PlasmaNM.Enums.Gsm ||
-                              Type == PlasmaNM.Enums.Cdma)
+    property bool activating: ConnectionState == PlasmaNM.Enums.Activating
+    property int baseHeight: connectionItemBase.height
+    property bool predictableWirelessPassword: !Uuid
+                                               && Type == PlasmaNM.Enums.Wireless
+                                               && (SecurityType == PlasmaNM.Enums.StaticWep
+                                                   || SecurityType == PlasmaNM.Enums.WpaPsk
+                                                   || SecurityType == PlasmaNM.Enums.Wpa2Psk)
+    property bool showSpeed: ConnectionState == PlasmaNM.Enums.Activated
+                             && (Type == PlasmaNM.Enums.Wimax
+                                 || Type == PlasmaNM.Enums.Wired
+                                 || Type == PlasmaNM.Enums.Wireless
+                                 || Type == PlasmaNM.Enums.Gsm
+                                 || Type == PlasmaNM.Enums.Cdma)
 
     property bool visiblePasswordDialog: false
 
     checked: connectionItem.containsMouse
     enabled: true
-    height: baseHeight
+    height: visiblePasswordDialog ? baseHeight + expandableComponentLoader.height : baseHeight
 
     PlasmaCore.DataSource {
         id: dataSource
@@ -53,7 +55,8 @@ PlasmaComponents.ListItem {
         property string downloadSource: "network/interfaces/" + DeviceName + "/receiver/data"
         property string uploadSource: "network/interfaces/" + DeviceName + "/transmitter/data"
 
-        connectedSources: showSpeed && plasmoid.expanded ? [downloadSource, uploadSource] : []
+        connectedSources: showSpeed
+                          && plasmoid.expanded ? [downloadSource, uploadSource] : []
         engine: "systemmonitor"
         interval: 2000
     }
@@ -68,7 +71,10 @@ PlasmaComponents.ListItem {
             // Reset top margin from PlasmaComponents.ListItem
             topMargin: -Math.round(units.gridUnit / 3)
         }
-        height: Math.max(units.iconSizes.medium, connectionNameLabel.height + connectionStatusLabel.height) + Math.round(units.gridUnit / 2)
+        height: Math.max(
+                    units.iconSizes.medium,
+                    connectionNameLabel.height + connectionStatusLabel.height) + Math.round(
+                    units.gridUnit / 2)
 
         PlasmaCore.SvgItem {
             id: connectionSvgIcon
@@ -78,7 +84,8 @@ PlasmaComponents.ListItem {
                 verticalCenter: parent.verticalCenter
             }
             elementId: ConnectionIcon
-            height: units.iconSizes.medium; width: height
+            height: units.iconSizes.medium
+            width: height
             svg: PlasmaCore.Svg {
                 multipleImages: true
                 imagePath: "icons/network"
@@ -127,8 +134,10 @@ PlasmaComponents.ListItem {
                 rightMargin: Math.round(units.gridUnit / 2)
                 verticalCenter: connectionSvgIcon.verticalCenter
             }
-            height: units.iconSizes.medium; width: height
-            running: plasmoid.expanded && !stateChangeButton.visible && ConnectionState == PlasmaNM.Enums.Activating
+            height: units.iconSizes.medium
+            width: height
+            running: plasmoid.expanded && !stateChangeButton.visible
+                     && ConnectionState == PlasmaNM.Enums.Activating
             visible: running
         }
 
@@ -142,9 +151,14 @@ PlasmaComponents.ListItem {
             }
             opacity: connectionItem.containsMouse ? 1 : 0
             visible: opacity != 0
-            text: (ConnectionState == PlasmaNM.Enums.Deactivated) ? i18n("Connect") : i18n("Disconnect")
+            text: (ConnectionState == PlasmaNM.Enums.Deactivated) ? i18n("Connect") : i18n(
+                                                                        "Disconnect")
 
-            Behavior on opacity { NumberAnimation { duration: units.shortDuration } }
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: units.shortDuration
+                }
+            }
 
             onClicked: changeState()
         }
@@ -167,7 +181,7 @@ PlasmaComponents.ListItem {
             property alias password: passwordInput.text
             property alias passwordFocus: passwordInput
 
-            height: childrenRect.height
+            height: childrenRect.height + Math.round(units.gridUnit / 2)
 
             PlasmaCore.SvgItem {
                 id: passwordSeparator
@@ -177,9 +191,13 @@ PlasmaComponents.ListItem {
                     right: parent.right
                     top: parent.top
                 }
-                height: lineSvg.elementSize("horizontal-line").height; width: parent.width
+                height: lineSvg.elementSize("horizontal-line").height
+                width: parent.width
                 elementId: "horizontal-line"
-                svg: PlasmaCore.Svg { id: lineSvg; imagePath: "widgets/line" }
+                svg: PlasmaCore.Svg {
+                    id: lineSvg
+                    imagePath: "widgets/line"
+                }
             }
 
             PlasmaComponents.TextField {
@@ -190,23 +208,24 @@ PlasmaComponents.ListItem {
                     top: passwordSeparator.bottom
                     topMargin: Math.round(units.gridUnit / 3)
                 }
-                height: implicitHeight; width: 200
+                height: implicitHeight
+                width: 200
                 echoMode: showPasswordCheckbox.checked ? TextInput.Normal : TextInput.Password
                 placeholderText: i18n("Password...")
                 validator: RegExpValidator {
-                                regExp: if (SecurityType == PlasmaNM.Enums.StaticWep) {
-                                            /^(?:.{5}|[0-9a-fA-F]{10}|.{13}|[0-9a-fA-F]{26}){1}$/
-                                        } else {
-                                            /^(?:.{8,64}){1}$/
-                                        }
-                                }
+                    regExp: if (SecurityType == PlasmaNM.Enums.StaticWep) {
+                                /^(?:.{5}|[0-9a-fA-F]{10}|.{13}|[0-9a-fA-F]{26}){1}$/
+                            } else {
+                                /^(?:.{8,64}){1}$/
+                            }
+                }
 
                 onAccepted: {
-                    stateChangeButton.clicked();
+                    stateChangeButton.clicked()
                 }
 
                 onAcceptableInputChanged: {
-                    stateChangeButton.enabled = acceptableInput;
+                    stateChangeButton.enabled = acceptableInput
                 }
             }
 
@@ -223,35 +242,43 @@ PlasmaComponents.ListItem {
             }
 
             Component.onCompleted: {
-                stateChangeButton.enabled = false;
+                stateChangeButton.enabled = false
             }
 
             Component.onDestruction: {
-                stateChangeButton.enabled = true;
+                stateChangeButton.enabled = true
             }
         }
     }
-
 
     states: [
         State {
             name: "collapsed"
             when: !(visiblePasswordDialog)
-            StateChangeScript { script: if (expandableComponentLoader.status == Loader.Ready) {expandableComponentLoader.sourceComponent = undefined} }
+            StateChangeScript {
+                script: if (expandableComponentLoader.status == Loader.Ready) {
+                            expandableComponentLoader.sourceComponent = undefined
+                        }
+            }
         },
 
         State {
             name: "expandedPasswordDialog"
             when: visiblePasswordDialog
-            StateChangeScript { script: createContent() }
-            PropertyChanges { target: stateChangeButton; opacity: 1 }
+            StateChangeScript {
+                script: createContent()
+            }
+            PropertyChanges {
+                target: stateChangeButton
+                opacity: 1
+            }
         }
     ]
 
     function createContent() {
         if (visiblePasswordDialog) {
-            expandableComponentLoader.sourceComponent = passwordDialogComponent;
-            expandableComponentLoader.item.passwordFocus.forceActiveFocus();
+            expandableComponentLoader.sourceComponent = passwordDialogComponent
+            expandableComponentLoader.item.passwordFocus.forceActiveFocus()
         }
     }
 
@@ -259,78 +286,87 @@ PlasmaComponents.ListItem {
         if (Uuid || !predictableWirelessPassword || visiblePasswordDialog) {
             if (ConnectionState == PlasmaNM.Enums.Deactivated) {
                 if (!predictableWirelessPassword && !Uuid) {
-                    networkHandler.addAndActivateConnection(DevicePath, SpecificPath);
+                    networkHandler.addAndActivateConnection(DevicePath,
+                                                            SpecificPath)
                 } else if (visiblePasswordDialog) {
                     if (expandableComponentLoader.item.password != "") {
-                        networkHandler.addAndActivateConnection(DevicePath, SpecificPath, expandableComponentLoader.item.password);
-                        visiblePasswordDialog = false;
+                        networkHandler.addAndActivateConnection(
+                                    DevicePath, SpecificPath,
+                                    expandableComponentLoader.item.password)
+                        visiblePasswordDialog = false
                     } else {
-                        connectionItem.clicked();
+                        connectionItem.clicked()
                     }
                 } else {
-                    networkHandler.activateConnection(ConnectionPath, DevicePath, SpecificPath);
+                    networkHandler.activateConnection(ConnectionPath,
+                                                      DevicePath, SpecificPath)
                 }
             } else {
-                networkHandler.deactivateConnection(ConnectionPath, DevicePath);
+                networkHandler.deactivateConnection(ConnectionPath, DevicePath)
             }
         } else if (predictableWirelessPassword) {
-            visiblePasswordDialog = true;
+            visiblePasswordDialog = true
         }
     }
 
     function itemText() {
         if (ConnectionState == PlasmaNM.Enums.Activating) {
             if (Type == PlasmaNM.Enums.Vpn)
-                return VpnState;
+                return VpnState
             else
-                return DeviceState;
+                return DeviceState
         } else if (ConnectionState == PlasmaNM.Enums.Deactivating) {
             if (Type == PlasmaNM.Enums.Vpn)
-                return VpnState;
+                return VpnState
             else
-                return DeviceState;
+                return DeviceState
         } else if (ConnectionState == PlasmaNM.Enums.Deactivated) {
-            var result = LastUsed;
+            var result = LastUsed
             if (SecurityType > PlasmaNM.Enums.NoneSecurity)
-                result += ", " + SecurityTypeString;
-            return result;
+                result += ", " + SecurityTypeString
+            return result
         } else if (ConnectionState == PlasmaNM.Enums.Activated) {
-            if (showSpeed && dataSource.data && dataSource.data[dataSource.downloadSource] && dataSource.data[dataSource.uploadSource]) {
+            if (showSpeed && dataSource.data
+                    && dataSource.data[dataSource.downloadSource]
+                    && dataSource.data[dataSource.uploadSource]) {
                 return i18n("Connected, <font color='%1'>⬇</font> %2/s, <font color='%3'>⬆</font> %4/s",
                             theme.highlightColor,
-                            KCoreAddons.Format.formatByteSize(dataSource.data[dataSource.downloadSource].value * 1024 || 0),
-                            cycle(theme.highlightColor, -180),
-                            KCoreAddons.Format.formatByteSize(dataSource.data[dataSource.uploadSource].value * 1024 || 0));
+                            KCoreAddons.Format.formatByteSize(
+                                dataSource.data[dataSource.downloadSource].value * 1024
+                                || 0), cycle(theme.highlightColor, -180),
+                            KCoreAddons.Format.formatByteSize(
+                                dataSource.data[dataSource.uploadSource].value * 1024
+                                || 0))
             } else {
-                return i18n("Connected");
+                return i18n("Connected")
             }
         }
     }
 
     /*
-     * Stolen from the system monitor applet
-     * from plasma-workspace/applets/systemmonitor/common/contents/ui/DoublePlotter.qml
-     */
+    * Stolen from the system monitor applet
+    * from plasma-workspace/applets/systemmonitor/common/contents/ui/DoublePlotter.qml
+    */
     function cycle(color, degrees) {
-        var min = Math.min(color.r, Math.min(color.g, color.b));
-        var max = Math.max(color.r, Math.max(color.g, color.b));
-        var c = max - min;
-        var h;
+        var min = Math.min(color.r, Math.min(color.g, color.b))
+        var max = Math.max(color.r, Math.max(color.g, color.b))
+        var c = max - min
+        var h
 
         if (c == 0) {
             h = 0
         } else if (max == color.r) {
-            h = ((color.g - color.b) / c) % 6;
+            h = ((color.g - color.b) / c) % 6
         } else if (max == color.g) {
-            h = ((color.b - color.r) / c) + 2;
+            h = ((color.b - color.r) / c) + 2
         } else if (max == color.b) {
-            h = ((color.r - color.g) / c) + 4;
+            h = ((color.r - color.g) / c) + 4
         }
-        var hue = (1/6) * h + (degrees/360);
-        var saturation = c / (1 - Math.abs(2 * ((max+min)/2) - 1));
-        var lightness = (max + min)/3;
+        var hue = (1 / 6) * h + (degrees / 360)
+        var saturation = c / (1 - Math.abs(2 * ((max + min) / 2) - 1))
+        var lightness = (max + min) / 3
 
-        return Qt.hsla(hue, saturation, lightness, 1.0);
+        return Qt.hsla(hue, saturation, lightness, 1.0)
     }
 
     onActivatingChanged: {

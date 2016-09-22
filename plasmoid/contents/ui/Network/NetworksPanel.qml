@@ -5,7 +5,7 @@ import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
 
 FocusScope {
-    height: header.height + scrollView.height
+    height: header.height + connectionView.height
 
     PlasmaNM.AvailableDevices {
         id: availableDevices
@@ -26,28 +26,25 @@ FocusScope {
         text: "Networks"
     }
 
-    PlasmaExtras.ScrollArea {
-        id: scrollView
-        height: connectionView.contentHeight
+    ListView {
+        id: connectionView
+
+        height: contentItem.height
+        property bool availableConnectionsVisible: false
+        property int currentVisibleButtonIndex: -1
+
         anchors {
             top: header.bottom
-            bottom: parent.bottom
             left: parent.left
             right: parent.right
         }
 
-        ListView {
-            id: connectionView
-
-            property bool availableConnectionsVisible: false
-            property int currentVisibleButtonIndex: -1
-
-            anchors.fill: parent
-            clip: true
-            model: appletProxyModel
-            currentIndex: -1
-            boundsBehavior: Flickable.StopAtBounds
-            delegate: ConnectionItem {}
+        clip: true
+        model: appletProxyModel
+        currentIndex: -1
+        boundsBehavior: Flickable.StopAtBounds
+        delegate: ConnectionItem {
         }
+
     }
 }

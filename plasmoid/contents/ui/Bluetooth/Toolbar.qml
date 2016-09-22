@@ -34,7 +34,8 @@ Item {
         id: label
 
         text: i18n("Bluetooth")
-        font.weight: Font.DemiBold
+        font.weight: Font.Light
+        font.pointSize: 18
         anchors {
             left: parent.left
             verticalCenter: parent.verticalCenter

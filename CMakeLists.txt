@@ -24,6 +24,8 @@ set_package_properties(X11 PROPERTIES DESCRIPTION "X11 libraries"
 
 plasma_install_package(plasmoid org.plasma-light.quick-controls)
 
+install( DIRECTORY image/breeze DESTINATION ${ICON_INSTALL_DIR})
+
 file(GLOB_RECURSE PLASMOID_SRCS "plasmoid/*")
 add_custom_target(DUMMY_FILE_TRACKER_FOR_QTCREATOR SOURCES ${PLASMOID_SRCS})
 

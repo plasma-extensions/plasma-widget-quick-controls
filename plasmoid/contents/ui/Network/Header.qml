@@ -36,7 +36,8 @@ Item {
         id: headerLabel
 
         text: i18n("Networks")
-        font.pointSize: 14
+        font.weight: Font.Light
+        font.pointSize: 18
         anchors.left: parent.left
         anchors.leftMargin: Math.round(units.gridUnit / 4)
         anchors.verticalCenter: parent.verticalCenter

@@ -23,13 +23,10 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.networkmanagement 0.2 as PlasmaNM
 
-PlasmaComponents.ListItem {
+Item {
     id: header
 
-    property alias text: headerLabel.text
-
-    height: headerLabel.height + units.gridUnit; width: parent.width
-    sectionDelegate: true
+    height: headerLabel.height + Math.round(units.gridUnit / 2)
 
     PlasmaNM.EnabledConnections {
         id: enabledConnections
@@ -38,25 +35,24 @@ PlasmaComponents.ListItem {
     PlasmaComponents.Label {
         id: headerLabel
 
-        //anchors.centerIn: parent
-        height: paintedHeight
-        font.weight: Font.DemiBold
+        text: i18n("Networks")
+        font.pointSize: 14
+        anchors.left: parent.left
+        anchors.leftMargin: Math.round(units.gridUnit / 4)
+        anchors.verticalCenter: parent.verticalCenter
     }
 
     PlasmaComponents.ToolButton {
         anchors {
+            right: openEditorButton.left
             top: parent.top
             bottom: parent.bottom
-            margins: -Math.round(units.gridUnit / 3)
-            right: parent.right
-            rightMargin: units.gridUnit / 2
         }
         width: height
         flat: true
         tooltip: i18n("Rescan wireless networks")
-  /*      visible: (header.text === i18n("Available connections") || !connectionView.availableConnectionsVisible) &&
-                 enabledConnections.wirelessEnabled && enabledConnections.wirelessHwEnabled && availableDevices.wirelessDeviceAvailable
-*/
+        visible: enabledConnections.wirelessEnabled && enabledConnections.wirelessHwEnabled && availableDevices.wirelessDeviceAvailable
+
         onClicked: {
             networkHandler.requestScan();
             refreshAnimation.restart();
@@ -81,17 +77,21 @@ PlasmaComponents.ListItem {
         }
     }
 
-    Component.onCompleted: {
-        if (header.text === i18n("Available connections")) {
-            connectionView.availableConnectionsVisible = true
+    PlasmaComponents.ToolButton {
+        id: openEditorButton
+
+        anchors {
+            right: parent.right
+            rightMargin: Math.round(units.gridUnit / 2)
+            top: parent.top
+            bottom: parent.bottom
         }
-    }
 
-    Component.onDestruction: {
-        connectionView.availableConnectionsVisible = false
-    }
+        iconSource: "configure"
+        tooltip: i18n("Configure network connections...")
 
-    onVisibleChanged: {
-        connectionView.availableConnectionsVisible = visible
+        onClicked: {
+            networkHandler.openEditor();
+        }
     }
 }

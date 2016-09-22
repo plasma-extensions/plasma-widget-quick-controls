@@ -136,8 +136,7 @@ PlasmaComponents.ListItem {
             }
             height: units.iconSizes.medium
             width: height
-            running: plasmoid.expanded && !stateChangeButton.visible
-                     && ConnectionState == PlasmaNM.Enums.Activating
+            running: !stateChangeButton.visible && ConnectionState == PlasmaNM.Enums.Activating
             visible: running
         }
 

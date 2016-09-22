@@ -17,6 +17,15 @@ FocusScope {
             id: appearanceLabel
             Layout.fillWidth: true
             text: i18n("Select appearance")
+            foint.pointSize: 12
+        }
+        
+        // Uri: I added these rectangles as separators.
+        
+        Rectangle {
+            width: 4
+            height: 4
+            color: "transparent"
         }
 
         PlasmaComponents.ComboBox {
@@ -36,6 +45,12 @@ FocusScope {
             }
 
         }
+        
+        Rectangle {
+            width: 4
+            height: 4
+            color: "transparent"
+        }
 
         PlasmaComponents.CheckBox {
             id: showExtraSettingsCheckBox
@@ -44,6 +59,12 @@ FocusScope {
 
             text: i18n("Show extra settings")
             checked: false
+        }
+        
+        Rectangle {
+            width: 4
+            height: 20
+            color: "transparent"
         }
 
         PlasmaComponents.ComboBox {

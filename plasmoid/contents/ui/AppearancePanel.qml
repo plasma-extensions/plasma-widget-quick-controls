@@ -17,7 +17,7 @@ FocusScope {
             id: appearanceLabel
             Layout.fillWidth: true
             text: i18n("Select appearance")
-            foint.pointSize: 12
+            font.pointSize: 12
         }
         
         // Uri: I added these rectangles as separators.

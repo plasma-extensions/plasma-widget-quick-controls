@@ -16,21 +16,15 @@ FocusScope {
         PlasmaComponents.Label {
             id: appearanceLabel
             Layout.fillWidth: true
+            Layout.bottomMargin: 4
             text: i18n("Select appearance")
             font.pointSize: 12
-        }
-        
-        // Uri: I added these rectangles as separators.
-        
-        Rectangle {
-            width: 4
-            height: 4
-            color: "transparent"
         }
 
         PlasmaComponents.ComboBox {
             id: lookAndFeelComboBox
             Layout.fillWidth: true
+            Layout.bottomMargin: 4
             height: 24
             model: Appearance.LookAndFeel
             textRole: "name"
@@ -45,26 +39,15 @@ FocusScope {
             }
 
         }
-        
-        Rectangle {
-            width: 4
-            height: 4
-            color: "transparent"
-        }
 
         PlasmaComponents.CheckBox {
             id: showExtraSettingsCheckBox
             Layout.fillWidth: true
+            Layout.bottomMargin: 10
             height: 24
 
             text: i18n("Show extra settings")
             checked: false
-        }
-        
-        Rectangle {
-            width: 4
-            height: 20
-            color: "transparent"
         }
 
         PlasmaComponents.ComboBox {

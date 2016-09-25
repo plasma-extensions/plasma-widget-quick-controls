@@ -39,6 +39,7 @@ Item {
         id: appearancePanel
         anchors {
             bottom: controls.top
+            bottomMargin: 10
             left: parent.left
             right: parent.right
         }

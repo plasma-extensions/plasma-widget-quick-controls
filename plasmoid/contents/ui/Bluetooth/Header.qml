@@ -28,7 +28,7 @@ import org.kde.plasma.private.bluetooth 1.0 as PlasmaBt
 Item {
     id: toolbar
 
-    height: label.height + 4
+    height: label.height + Math.round(units.gridUnit / 4)
 
     PlasmaComponents.Label {
         id: label
@@ -51,7 +51,8 @@ Item {
         anchors {
             right: parent.right
             rightMargin: Math.round(units.gridUnit / 2)
-            verticalCenter: parent.verticalCenter
+            top: parent.top
+            bottom: parent.bottom
         }
 
         PlasmaComponents.ToolButton {

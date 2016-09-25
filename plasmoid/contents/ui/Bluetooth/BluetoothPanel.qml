@@ -36,6 +36,16 @@ FocusScope {
         sourceModel: BluezQt.DevicesModel { }
     }
 
+    Header {
+        id: toolbar
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+    }
+
     PlasmaExtras.Heading {
         id: noAdaptersHeading
         level: 3
@@ -43,51 +53,8 @@ FocusScope {
         text: i18n("No Adapters Available")
 
         anchors {
-            top: parent.top
+            top: toolbar.bottom
             left: parent.left
-        }
-    }
-
-    Item {
-        id: bluetoothDisabledView
-        anchors.fill: parent
-
-        PlasmaExtras.Heading {
-            id: bluetoothDisabledHeading
-            level: 3
-            opacity: 0.6
-            text: i18n("Bluetooth is Disabled")
-
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                bottom: enableBluetoothButton.top
-                bottomMargin: units.smallSpacing
-            }
-        }
-
-        PlasmaComponents.Button {
-            id: enableBluetoothButton
-            text: i18n("Enable Bluetooth")
-            iconSource: "preferences-system-bluetooth"
-
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                verticalCenter: parent.verticalCenter
-            }
-
-            onClicked: {
-                toolbar.toggleBluetooth();
-            }
-        }
-    }
-
-    Toolbar {
-        id: toolbar
-
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
         }
     }
 
@@ -168,9 +135,7 @@ FocusScope {
 
     onStateChanged: {
         noAdaptersHeading.visible = (state == "NoAdaptersState");
-        toolbar.visible = (state == "DevicesState" || state == "NoDevicesState");
         noDevicesView.visible = (state == "NoDevicesState");
-        bluetoothDisabledView.visible = (state == "BlockedState");
         devicesView.visible = (state == "DevicesState");
     }
 

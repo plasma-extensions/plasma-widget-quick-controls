@@ -19,12 +19,10 @@ PlasmaCore.IconItem {
 
   MouseArea {
     anchors.fill: parent
-    property bool wasExpanded: sidePanel.visible
-    hoverEnabled: true
+    property bool wasExpanded: false
     acceptedButtons: Qt.LeftButton
 
-    onPressed: {
-            sidePanel.display()
-    }
+    onPressed: wasExpanded = sidePanel.visible
+    onClicked: if (!wasExpanded) sidePanel.display(); else sidePanel.visible = false;
   }
 }

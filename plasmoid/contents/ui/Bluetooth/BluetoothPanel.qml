@@ -181,13 +181,6 @@ FocusScope {
             text = i18n("No connected devices");
         }
 
-        plasmoid.toolTipSubText = text;
         deviceConnected = connectedDevices.length;
-
-        if (btManager.bluetoothOperational) {
-            plasmoid.status = PlasmaCore.Types.ActiveStatus;
-        } else {
-            plasmoid.status = PlasmaCore.Types.PassiveStatus;
-        }
     }
 }

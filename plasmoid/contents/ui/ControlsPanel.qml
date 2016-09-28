@@ -8,19 +8,6 @@ import org.kde.plasma.private.bluetooth 1.0 as PlasmaBt
 RowLayout {
     spacing: 12
 
-    Connections {
-        target: enabledConnections
-
-        onWirelessEnabledChanged: {
-            wirelessSwitch.checked = wirelessSwitch.enabled && enabled
-        }
-
-        onWirelessHwEnabledChanged: {
-            wirelessSwitch.enabled = enabled && availableNetworkDevices.wirelessDeviceAvailable && !airplaneModeSwitch.airplaneModeEnabled
-        }
-    }
-
-
     PlasmaComponents.ToolButton {
         id: bluetoothSwitch
         Layout.alignment: Qt.AlignHCenter
@@ -78,10 +65,9 @@ RowLayout {
         Layout.alignment: Qt.AlignHCenter
         iconSource: "widget-control-wireless"
 
-        onClicked: {
-            checked = !checked
-            networkHandler.enableWireless(checked);
-        }
+        checked: enabled && enabledConnections.wirelessEnabled;
+        enabled: !airplaneModeSwitch.airplaneModeEnabled && enabledConnections.wirelessHwEnabled  && availableNetworkDevices.wirelessDeviceAvailable;
+        onClicked: networkHandler.enableWireless(!checked);
     }
 
     PlasmaComponents.ToolButton {
@@ -94,9 +80,7 @@ RowLayout {
 
         onClicked: {
             airplaneModeEnabled = !airplaneModeEnabled;
-            wirelessSwitch.enabled = !airplaneModeEnabled;
-
-            networkHandler.enableAirplaneMode(checked);
+            networkHandler.enableAirplaneMode(airplaneModeEnabled);
         }
     }
 }

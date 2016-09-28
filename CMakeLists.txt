@@ -30,3 +30,4 @@ file(GLOB_RECURSE PLASMOID_SRCS "plasmoid/*")
 add_custom_target(DUMMY_FILE_TRACKER_FOR_QTCREATOR SOURCES ${PLASMOID_SRCS})
 
 add_subdirectory(plugin)
+add_subdirectory(translations)

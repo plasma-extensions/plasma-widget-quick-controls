@@ -1,0 +1,353 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: https://github.com/plasma-extensions/plasma-widget-"
+"quick-controls/issues\n"
+"POT-Creation-Date: 2016-09-27 20:55-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: plasmoid/contents/code/bluetoothlogic.js:47
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:167
+msgid "Bluetooth is disabled"
+msgstr ""
+
+#: plasmoid/contents/code/bluetoothlogic.js:50
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:170
+msgid "No adapters available"
+msgstr ""
+
+#: plasmoid/contents/code/bluetoothlogic.js:52
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:172
+msgid "Bluetooth is offline"
+msgstr ""
+
+#: plasmoid/contents/code/bluetoothlogic.js:55
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:175
+msgctxt "Number of connected devices"
+msgid "%1 connected device"
+msgid_plural "%1 connected devices"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plasmoid/contents/code/bluetoothlogic.js:61
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:181
+msgid "No connected devices"
+msgstr ""
+
+#: plasmoid/contents/config/config.qml:27
+msgid "Information"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:20
+msgid "Select appearance"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:38
+msgid "Default Look and Feel"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:49
+msgid "Show extra settings"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:67
+msgid "Change Plasma theme"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:84
+msgid "Change Icon theme"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:102
+msgid "Change Color theme"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:119
+msgid "Change Widget theme"
+msgstr ""
+
+#: plasmoid/contents/ui/AppearancePanel.qml:136
+msgid "Change Mouse Cursor theme"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:53
+msgid "No Adapters Available"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:80
+msgid "No Devices Found"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/BluetoothPanel.qml:91
+msgid "Add New Device"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:134
+#: plasmoid/contents/ui/Network/ConnectionItem.qml:154
+msgid "Disconnect"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:134
+#: plasmoid/contents/ui/Network/ConnectionItem.qml:153
+msgid "Connect"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:167
+msgid "Yes"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:169
+msgid "No"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:185
+msgid "Remote Name"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:189
+msgid "Address"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:192
+msgid "Paired"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:195
+msgid "Trusted"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:198
+msgid "Adapter"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:207
+msgid "Disconnecting"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:207
+msgid "Connecting"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:214
+msgid "Audio device"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:220
+msgid "Input device"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:229
+msgid "File transfer"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:232
+msgid "Send file"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:235
+msgid "Input"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:238
+msgid "Audio"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:241
+msgid "Network"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:245
+msgid "Other device"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:286
+msgctxt "Notification when the connection failed due to Failed:HostIsDown"
+msgid "The device is unreachable"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:289
+msgctxt "Notification when the connection failed due to Failed"
+msgid "Connection to the device failed"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/DeviceItem.qml:295
+msgctxt "Notification when the connection failed due to NotReady"
+msgid "The device is not ready"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/Header.qml:36
+msgid "Bluetooth"
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/Header.qml:62
+msgid "Add New Device..."
+msgstr ""
+
+#: plasmoid/contents/ui/Bluetooth/Header.qml:73
+msgid "Configure Bluetooth..."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:134
+msgctxt "@info:status Free disk space"
+msgid "%1 free"
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:162
+msgctxt ""
+"Accessing is a less technical word for Mounting; translation should be short "
+"and mean 'Currently mounting this device'"
+msgid "Accessing..."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:162
+msgctxt ""
+"Removing is a less technical word for Unmounting; translation shoud be short "
+"and mean 'Currently unmounting this device'"
+msgid "Removing..."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:176
+msgid "1 action for this device"
+msgid_plural "%1 actions for this device"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:209
+msgid "Click to mount this device."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:211
+msgid "Click to eject this disc."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:213
+msgid "Click to safely remove this device."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:215
+msgid "Click to access this device from other applications."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:234
+msgid ""
+"It is currently <b>not safe</b> to remove this device: applications may be "
+"accessing it. Click the eject button to safely remove this device."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:236
+msgid "This device is currently accessible."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:241
+msgid ""
+"It is currently <b>not safe</b> to remove this device: applications may be "
+"accessing other volumes on this device. Click the eject button on these "
+"other volumes to safely remove this device."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:243
+msgid "It is currently safe to remove this device."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DeviceItem.qml:246
+msgid "This device is not currently accessible."
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DevicesPanel.qml:102
+msgid "Most recent device"
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DevicesPanel.qml:106
+msgid "No devices available"
+msgstr ""
+
+#: plasmoid/contents/ui/Devices/DevicesPanel.qml:183
+msgid "No Devices Available"
+msgstr ""
+
+#: plasmoid/contents/ui/main.qml:16
+msgid "Quick Controls"
+msgstr ""
+
+#: plasmoid/contents/ui/Network/ConnectionItem.qml:213
+msgid "Password..."
+msgstr ""
+
+#: plasmoid/contents/ui/Network/ConnectionItem.qml:240
+msgid "Show password"
+msgstr ""
+
+#: plasmoid/contents/ui/Network/ConnectionItem.qml:331
+msgid ""
+"Connected, <font color='%1'>⬇</font> %2/s, <font color='%3'>⬆</font> %4/s"
+msgstr ""
+
+#: plasmoid/contents/ui/Network/ConnectionItem.qml:340
+msgid "Connected"
+msgstr ""
+
+#: plasmoid/contents/ui/Network/Header.qml:18
+msgid "Networks"
+msgstr ""
+
+#: plasmoid/contents/ui/Network/Header.qml:41
+msgid "Rescan wireless networks"
+msgstr ""
+
+#: plasmoid/contents/ui/Network/Header.qml:76
+msgid "Configure network connections..."
+msgstr ""
+
+#: plugin/cursorthememodel.cpp:160
+msgid "Name"
+msgstr ""
+
+#: plugin/cursorthememodel.cpp:163
+msgid "Description"
+msgstr ""
+
+#: plugin/krdb.cpp:259
+msgid ""
+"# created by KDE, %1\n"
+"#\n"
+"# If you do not want KDE to override your GTK settings, select\n"
+"# Appearance -> Colors in the System Settings and disable the checkbox\n"
+"# \"Apply colors to non-KDE4 applications\"\n"
+"#\n"
+"#\n"
+msgstr ""
+
+#: plugin/xcursor/xcursortheme.cpp:75
+msgctxt ""
+"@info The argument is the list of available sizes (in pixel). Example: "
+"'Available sizes: 24' or 'Available sizes: 24, 36, 48'"
+msgid "(Available sizes: %1)"
+msgstr ""
+
+#: translations/rc.cpp:1 rc.cpp:1
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr ""
+
+#: translations/rc.cpp:2 rc.cpp:2
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr ""
+
+#: translations/rc.cpp:3 rc.cpp:3
+msgctxt "HOMEPAGE OF TRANSLATORS"
+msgid "Your homepages"
+msgstr ""

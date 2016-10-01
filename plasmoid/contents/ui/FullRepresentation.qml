@@ -5,6 +5,7 @@ import org.kde.plasma.extras 2.0 as PlasmaExtras
 import "Network"
 import "Devices"
 import "Bluetooth"
+import "Sound"
 
 Item {
     width: 300
@@ -12,7 +13,7 @@ Item {
     ColumnLayout {
         anchors {
             top: parent.top
-            bottom: appearancePanel.top
+            bottom: soundPanel.top
             left: parent.left
             right: parent.right
         }
@@ -32,6 +33,15 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
+        }
+    }
+
+    SoundPanel {
+        id: soundPanel
+        anchors {
+            bottom: appearancePanel.top
+            left: parent.left
+            right: parent.right
         }
     }
 

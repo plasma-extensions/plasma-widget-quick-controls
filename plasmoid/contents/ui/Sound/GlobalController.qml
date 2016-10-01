@@ -1,23 +1,3 @@
-/*
-    Copyright 2014-2015 Harald Sitter <sitter@kde.org>
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License as
-    published by the Free Software Foundation; either version 2 of
-    the License or (at your option) version 3 or any later version
-    accepted by the membership of KDE e.V. (or its successor approved
-    by the membership of KDE e.V.), which shall act as a proxy
-    defined in Section 14 of version 3 of the license.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 import QtQuick 2.0
 
 import QtQuick.Controls 1.0
@@ -34,19 +14,19 @@ MouseArea {
     property bool expanded: false
     property string icon
     property Component subComponent
-    property var pulseObject;
+    property var pulseObject
 
     property alias label: textLabel.text
     property alias expanderIconVisible: expanderIcon.visible
 
-    signal setVolume(var volume);
+    signal setVolume(var volume)
 
     enabled: subComponent
 
     height: layout.implicitHeight
 
     onIconChanged: {
-        clientIcon.visible = icon ? true : false;
+        clientIcon.visible = icon ? true : false
         clientIcon.icon = icon
     }
 
@@ -54,8 +34,7 @@ MouseArea {
         id: layout
 
         anchors {
-            top : parent.top
-            left : parent.left
+            left: parent.left
             right: parent.right
         }
 
@@ -80,7 +59,7 @@ MouseArea {
                     height: textLabel.height
 
                     PlasmaComponents.Label {
-                        id :textLabel
+                        id: textLabel
                         anchors.top: parent.top
                         anchors.left: parent.left
                         anchors.right: expanderIcon.visible ? expanderIcon.left : parent.right
@@ -91,28 +70,45 @@ MouseArea {
                     PlasmaCore.SvgItem {
                         id: expanderIcon
                         visible: subComponent
-                        anchors.top: parent.top;
-                        anchors.right: openSettingsButton.left;
-                        anchors.bottom: parent.bottom;
+                        anchors.top: parent.top
+                        anchors.right: openSettingsButton.left
+                        anchors.rightMargin: units.smallSpacing
+                        anchors.bottom: parent.bottom
                         width: height
+                        antialiasing: true
                         svg: PlasmaCore.Svg {
                             imagePath: "widgets/arrows"
                         }
-                        elementId: expanded ? "up-arrow" : "down-arrow"
+                        elementId: "up-arrow"
+
+                        states: State {
+                            name: "rotated"
+                            PropertyChanges {
+                                target: expanderIcon
+                                rotation: 180
+                            }
+                            when: expanded
+                        }
+
+                        transitions: Transition {
+                            RotationAnimation {
+                                direction: expanded ? RotationAnimation.Clockwise : RotationAnimation.Counterclockwise
+                            }
+                        }
                     }
 
                     PlasmaComponents.ToolButton {
                         id: openSettingsButton
 
-                        anchors.top: parent.top;
-                        anchors.right: parent.right;
-                        anchors.bottom: parent.bottom;
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
 
                         iconSource: "configure"
                         tooltip: i18n("Configure Audio Volume...")
 
                         onClicked: {
-                            KCMShell.open(["pulseaudio"]);
+                            KCMShell.open(["pulseaudio"])
                         }
                     }
                 }
@@ -120,7 +116,7 @@ MouseArea {
                 RowLayout {
                     VolumeIcon {
                         Layout.maximumHeight: slider.height * 0.75
-                        Layout.maximumWidth: slider.height* 0.75
+                        Layout.maximumWidth: slider.height * 0.75
                         volume: pulseObject.volume
                         muted: pulseObject.muted
 
@@ -150,21 +146,22 @@ MouseArea {
                             if (typeof pulseObject.volumeWritable === 'undefined') {
                                 return !pulseObject.muted
                             }
-                            return pulseObject.volumeWritable && !pulseObject.muted
+                            return pulseObject.volumeWritable
+                                    && !pulseObject.muted
                         }
 
                         onVolumeChanged: {
-                            ignoreValueChange = true;
-                            value = pulseObject.volume;
-                            ignoreValueChange = false;
+                            ignoreValueChange = true
+                            value = pulseObject.volume
+                            ignoreValueChange = false
                         }
 
                         onValueChanged: {
                             if (!ignoreValueChange) {
-                                setVolume(value);
+                                setVolume(value)
 
                                 if (!pressed) {
-                                    updateTimer.restart();
+                                    updateTimer.restart()
                                 }
                             }
                         }
@@ -176,7 +173,7 @@ MouseArea {
                                 // Otherwise it might be that the slider is at v10
                                 // whereas PA rejected the volume change and is
                                 // still at v15 (e.g.).
-                                updateTimer.restart();
+                                updateTimer.restart()
                             }
                         }
 
@@ -198,7 +195,9 @@ MouseArea {
                         Layout.alignment: Qt.AlignHCenter
                         Layout.minimumWidth: referenceText.width
                         horizontalAlignment: Qt.AlignRight
-                        text: i18nc("volume percentage", "%1%", Math.floor(slider.value / slider.maximumValue * 100.0))
+                        text: i18nc(
+                                  "volume percentage", "%1%", Math.floor(
+                                      slider.value / slider.maximumValue * 100.0))
                     }
                 }
             }
@@ -206,39 +205,61 @@ MouseArea {
 
         Loader {
             id: subLoader
-            Layout.fillWidth: true
+            height: 0;
+            clip: true;
 
-            Layout.minimumHeight: item ? item.implicitHeight : 0
+            Layout.fillWidth: true
             Layout.maximumHeight: Layout.minimumHeight
+
+            NumberAnimation {
+                  id: showAnimation
+                  target: subLoader
+                  property: "Layout.minimumHeight"
+                  from: 0
+                  to: subLoader.item ? subLoader.item.implicitHeight : 0
+            }
+
+            NumberAnimation {
+                  id: hideAnimation
+                  target: subLoader
+                  property: "Layout.minimumHeight"
+                  from: subLoader.item.implicitHeight
+                  to: 0
+            }
         }
     }
 
     states: [
         State {
-            name: "collapsed";
-            when: !expanded;
+            name: "collapsed"
+            when: !expanded
             StateChangeScript {
                 script: {
                     if (subLoader.status == Loader.Ready) {
-                        subLoader.sourceComponent = undefined;
+                        hideAnimation.running = true;
+                        subLoader.sourceComponent = undefined
                     }
                 }
             }
         },
         State {
-            name: "expanded";
-            when: expanded;
+            name: "expanded"
+            when: expanded
             StateChangeScript {
-                script: subLoader.sourceComponent = subComponent;
+                script: {
+                    subLoader.sourceComponent = subComponent;
+                    showAnimation.running = true;
+                }
             }
         }
     ]
 
-        onClicked: {
-            if (!subComponent) {
-                return;
-            }
 
-            expanded = !expanded;
+    onClicked: {
+        if (!subComponent) {
+            return
         }
+
+        expanded = !expanded
+    }
 }

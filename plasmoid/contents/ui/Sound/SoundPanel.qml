@@ -108,7 +108,6 @@ Item {
         id: fullPanel
 
         ColumnLayout {
-            anchors.fill: parent
 
             Header {
                 Layout.fillWidth: true

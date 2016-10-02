@@ -58,7 +58,6 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        label: expanded ? i18n("Select playback device") : currentDeviceDescription
         subComponent: fullPanel;
         //subComponent: sinkModel.rowCount() > 1 ? fullPanel : undefined;
 

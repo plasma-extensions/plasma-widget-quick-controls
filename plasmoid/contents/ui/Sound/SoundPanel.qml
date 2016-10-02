@@ -1,9 +1,10 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
 
+import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.extras 2.0 as PlasmaExtras
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 import org.kde.plasma.private.volume 0.1
 
@@ -12,31 +13,6 @@ import "../../code/soundicon.js" as Icon
 Item {
     id: main
     height: globalController.height
-
-    function runOnAllSinks(func) {
-        if (typeof (sinkView) === "undefined") {
-            print("This case we need to handle.")
-            return
-        } else if (sinkView.count < 0) {
-            return
-        }
-        for (var i = 0; i < sinkView.count; ++i) {
-            sinkView.currentIndex = i
-            sinkView.currentItem[func]()
-        }
-    }
-
-    function increaseVolume() {
-        runOnAllSinks("increaseVolume")
-    }
-
-    function decreaseVolume() {
-        runOnAllSinks("decreaseVolume")
-    }
-
-    function muteVolume() {
-        runOnAllSinks("toggleMute")
-    }
 
     GlobalActionCollection {
         // KGlobalAccel cannot transition from kmix to something else, so if
@@ -82,38 +58,21 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        label: i18n("Audio Volume")
-        subComponent: fullPanel
+        label: expanded ? i18n("Select playback device") : currentDeviceDescription
+        subComponent: fullPanel;
+        //subComponent: sinkModel.rowCount() > 1 ? fullPanel : undefined;
 
-        pulseObject: sinkModel.sinks[0]
+        pulseObject: sinkModel.sinks[currentDevice]
+        property int currentDevice : 0;
+        property var currentDeviceDescription : pulseObject ? pulseObject.description : i18n("Audio Volume");
 
-        onSetVolume: {
-            for (var i = 0; i < sinkModel.rowCount(); i ++) {
-                var sink = sinkModel.sinks[i];
-                if (volume > 0 && muted) {
-                    var toMute = !sink.PulseObject.Muted;
-                    if (toMute) {
-                        osd.show(0);
-                    } else {
-                        osd.show(volumePercent(volume));
-                    }
-                    sink.Muted = toMute;
-                }
-                sink.volume = volume
-            }
-        }
+        onSetVolume: main.setVolume(volume);
     }
 
     Component {
         id: fullPanel
 
         ColumnLayout {
-
-            Header {
-                Layout.fillWidth: true
-                visible: sinkView.count > 0
-                text: i18n("Playback Devices")
-            }
             ListView {
                 id: sinkView
 
@@ -123,29 +82,49 @@ Item {
 
                 model: sinkModel
                 boundsBehavior: Flickable.StopAtBounds
-                delegate: SinkListItem {
+                currentIndex: globalController.currentDevice
+                onCurrentIndexChanged: globalController.currentDevice = currentIndex;
+
+                highlight: Rectangle {
+                    anchors.fill: parent;
+                    color: theme.highlightColor;
                 }
-            }
+                highlightFollowsCurrentItem: false
+                delegate: RowLayout {
 
-            Header {
-                Layout.fillWidth: true
-                visible: sourceView.count > 0
-                text: i18n("Capture Devices")
-            }
-            ListView {
-                id: sourceView
+                    PlasmaComponents.Label {
+                        Layout.leftMargin: 12;
+                        Layout.rightMargin: 8;
+                        Layout.topMargin: 8
+                        Layout.bottomMargin: 8
+                        text: PulseObject.description
+                        font.pointSize: 11
+                    }
 
-                Layout.fillWidth: true
-                Layout.minimumHeight: contentHeight
-                Layout.maximumHeight: contentHeight
-
-                model: SourceModel {
-                    id: sourceModel
-                }
-                boundsBehavior: Flickable.StopAtBounds
-                delegate: SourceListItem {
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: sinkView.currentIndex = index;
+                    }
                 }
             }
         }
+    }
+
+    function setVolume(volume) {
+        var device = globalController.pulseObject;
+        if (volume > 0 && globalController.muted) {
+            var toMute = !device.Muted
+            if (toMute) {
+                osd.show(0)
+            } else {
+                osd.show(volumePercent(volume))
+            }
+            device.Muted = toMute
+        }
+        device.volume = volume
+    }
+
+    function volumePercent(volume) {
+        return 100 * volume / slider.maximumValue;
     }
 }

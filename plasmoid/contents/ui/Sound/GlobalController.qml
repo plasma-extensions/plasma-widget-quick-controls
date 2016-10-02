@@ -43,14 +43,6 @@ MouseArea {
             Layout.fillWidth: true
             spacing: 8
 
-            QIconItem {
-                id: clientIcon
-                visible: false
-                Layout.alignment: Qt.AlignHCenter
-                width: height
-                height: column.height * 0.75
-            }
-
             ColumnLayout {
                 id: column
 
@@ -113,7 +105,35 @@ MouseArea {
                     }
                 }
 
+                Loader {
+                    id: subLoader
+                    height: 0;
+                    clip: true;
+
+                    Layout.fillWidth: true
+                    Layout.maximumHeight: Layout.minimumHeight
+
+                    NumberAnimation {
+                          id: showAnimation
+                          target: subLoader
+                          property: "Layout.minimumHeight"
+                          from: 0
+                          to: subLoader.item ? subLoader.item.implicitHeight : 0
+                    }
+
+                    NumberAnimation {
+                          id: hideAnimation
+                          target: subLoader
+                          property: "Layout.minimumHeight"
+                          from: subLoader.item.implicitHeight
+                          to: 0
+                    }
+                }
+
                 RowLayout {
+                    Layout.rightMargin: 8;
+                    Layout.leftMargin: 8;
+
                     VolumeIcon {
                         Layout.maximumHeight: slider.height * 0.75
                         Layout.maximumWidth: slider.height * 0.75
@@ -182,13 +202,6 @@ MouseArea {
                             interval: 200
                             onTriggered: slider.value = pulseObject.volume
                         }
-
-                        // Block wheel events
-                        MouseArea {
-                            anchors.fill: parent
-                            acceptedButtons: Qt.NoButton
-                            onWheel: wheel.accepted = true
-                        }
                     }
                     PlasmaComponents.Label {
                         id: percentText
@@ -203,30 +216,7 @@ MouseArea {
             }
         }
 
-        Loader {
-            id: subLoader
-            height: 0;
-            clip: true;
 
-            Layout.fillWidth: true
-            Layout.maximumHeight: Layout.minimumHeight
-
-            NumberAnimation {
-                  id: showAnimation
-                  target: subLoader
-                  property: "Layout.minimumHeight"
-                  from: 0
-                  to: subLoader.item ? subLoader.item.implicitHeight : 0
-            }
-
-            NumberAnimation {
-                  id: hideAnimation
-                  target: subLoader
-                  property: "Layout.minimumHeight"
-                  from: subLoader.item.implicitHeight
-                  to: 0
-            }
-        }
     }
 
     states: [

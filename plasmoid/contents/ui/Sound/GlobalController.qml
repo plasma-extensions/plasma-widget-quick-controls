@@ -22,7 +22,7 @@ MouseArea {
 
     enabled: subComponent
 
-    height: layout.implicitHeight
+    height: layout.implicitHeight + 8
 
     onIconChanged: {
         clientIcon.visible = icon ? true : false

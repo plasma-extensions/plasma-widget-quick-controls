@@ -84,11 +84,13 @@ Item {
                 currentIndex: globalController.currentDevice
                 onCurrentIndexChanged: globalController.currentDevice = currentIndex;
 
+
                 highlight: Rectangle {
-                    anchors.fill: parent;
+                    anchors.left: parent.left;
+                    anchors.right: parent.right;
                     color: theme.highlightColor;
                 }
-                highlightFollowsCurrentItem: false
+                highlightFollowsCurrentItem: true
                 delegate: RowLayout {
 
                     PlasmaComponents.Label {

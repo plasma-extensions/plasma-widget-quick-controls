@@ -113,7 +113,6 @@ Item {
                     PropertyChanges {
                         target: expanderIcon
                         rotation: 180
-
                     }
                     when: expanderIcon.expanded
                 }

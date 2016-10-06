@@ -13,14 +13,12 @@ MouseArea {
     property bool muted: false
     property bool expanded: false
     property string icon
-    property Component subComponent
+    property Component deviceDetails
     property var pulseObject
-
-    property alias expanderIconVisible: expanderIcon.visible
 
     signal setVolume(var volume)
 
-    enabled: subComponent
+    enabled: deviceDetails
 
     height: layout.implicitHeight
 
@@ -45,140 +43,87 @@ MouseArea {
             ColumnLayout {
                 id: column
 
-                Item {
+                RowLayout {
+                    id: contorller
                     Layout.fillWidth: true
-                    height: contorller.implicitHeight
 
-                    RowLayout {
-                        id: contorller
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: expanderIcon.left
-                        anchors.rightMargin: 8
+                    VolumeIcon {
+                        Layout.maximumHeight: slider.height * 0.75
+                        Layout.maximumWidth: slider.height * 0.75
+                        volume: pulseObject.volume
+                        muted: pulseObject.muted
 
-                        VolumeIcon {
-                            Layout.maximumHeight: slider.height * 0.75
-                            Layout.maximumWidth: slider.height * 0.75
-                            volume: pulseObject.volume
-                            muted: pulseObject.muted
+                        MouseArea {
+                            anchors.fill: parent
+                            onPressed: pulseObject.muted = !pulseObject.muted
+                        }
+                    }
 
-                            MouseArea {
-                                anchors.fill: parent
-                                onPressed: pulseObject.muted = !pulseObject.muted
+                    PlasmaComponents.Slider {
+                        id: slider
+
+                        // Helper properties to allow async slider updates.
+                        // While we are sliding we must not react to value updates
+                        // as otherwise we can easily end up in a loop where value
+                        // changes trigger volume changes trigger value changes.
+                        property int volume: pulseObject.volume
+                        property bool ignoreValueChange: false
+
+                        Layout.fillWidth: true
+                        minimumValue: 0
+                        // FIXME: I do wonder if exposing max through the model would be useful at all
+                        maximumValue: 65536
+                        stepSize: maximumValue / 100
+                        visible: pulseObject.hasVolume
+                        enabled: {
+                            if (typeof pulseObject.volumeWritable === 'undefined') {
+                                return !pulseObject.muted
                             }
+                            return pulseObject.volumeWritable
+                                    && !pulseObject.muted
                         }
 
-                        PlasmaComponents.Slider {
-                            id: slider
+                        onVolumeChanged: {
+                            ignoreValueChange = true
+                            value = pulseObject.volume
+                            ignoreValueChange = false
+                        }
 
-                            // Helper properties to allow async slider updates.
-                            // While we are sliding we must not react to value updates
-                            // as otherwise we can easily end up in a loop where value
-                            // changes trigger volume changes trigger value changes.
-                            property int volume: pulseObject.volume
-                            property bool ignoreValueChange: false
+                        onValueChanged: {
+                            if (!ignoreValueChange) {
+                                setVolume(value)
 
-                            Layout.fillWidth: true
-                            minimumValue: 0
-                            // FIXME: I do wonder if exposing max through the model would be useful at all
-                            maximumValue: 65536
-                            stepSize: maximumValue / 100
-                            visible: pulseObject.hasVolume
-                            enabled: {
-                                if (typeof pulseObject.volumeWritable === 'undefined') {
-                                    return !pulseObject.muted
-                                }
-                                return pulseObject.volumeWritable
-                                        && !pulseObject.muted
-                            }
-
-                            onVolumeChanged: {
-                                ignoreValueChange = true
-                                value = pulseObject.volume
-                                ignoreValueChange = false
-                            }
-
-                            onValueChanged: {
-                                if (!ignoreValueChange) {
-                                    setVolume(value)
-
-                                    if (!pressed) {
-                                        updateTimer.restart()
-                                    }
-                                }
-                            }
-
-                            onPressedChanged: {
                                 if (!pressed) {
-                                    // Make sure to sync the volume once the button was
-                                    // released.
-                                    // Otherwise it might be that the slider is at v10
-                                    // whereas PA rejected the volume change and is
-                                    // still at v15 (e.g.).
                                     updateTimer.restart()
                                 }
                             }
+                        }
 
-                            Timer {
-                                id: updateTimer
-                                interval: 200
-                                onTriggered: slider.value = pulseObject.volume
+                        onPressedChanged: {
+                            if (!pressed) {
+                                // Make sure to sync the volume once the button was
+                                // released.
+                                // Otherwise it might be that the slider is at v10
+                                // whereas PA rejected the volume change and is
+                                // still at v15 (e.g.).
+                                updateTimer.restart()
                             }
                         }
-                        PlasmaComponents.Label {
-                            id: percentText
-                            Layout.alignment: Qt.AlignHCenter
-                            Layout.minimumWidth: referenceText.width
-                            horizontalAlignment: Qt.AlignRight
-                            text: i18nc(
-                                      "volume percentage", "%1%", Math.floor(
-                                          slider.value / slider.maximumValue * 100.0))
+
+                        Timer {
+                            id: updateTimer
+                            interval: 200
+                            onTriggered: slider.value = pulseObject.volume
                         }
                     }
-
-                    PlasmaCore.SvgItem {
-                        id: expanderIcon
-                        visible: subComponent
-                        anchors.top: parent.top
-                        anchors.right: openSettingsButton.left
-                        anchors.rightMargin: units.smallSpacing
-                        anchors.bottom: parent.bottom
-                        width: height
-                        antialiasing: true
-                        svg: PlasmaCore.Svg {
-                            imagePath: "widgets/arrows"
-                        }
-                        elementId: "up-arrow"
-
-                        states: State {
-                            name: "rotated"
-                            PropertyChanges {
-                                target: expanderIcon
-                                rotation: 180
-                            }
-                            when: expanded
-                        }
-
-                        transitions: Transition {
-                            RotationAnimation {
-                                direction: expanded ? RotationAnimation.Clockwise : RotationAnimation.Counterclockwise
-                            }
-                        }
-                    }
-
-                    PlasmaComponents.ToolButton {
-                        id: openSettingsButton
-
-                        anchors.top: parent.top
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-
-                        iconSource: "configure"
-                        tooltip: i18n("Configure Audio Volume...")
-
-                        onClicked: {
-                            KCMShell.open(["pulseaudio"])
-                        }
+                    PlasmaComponents.Label {
+                        id: percentText
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.minimumWidth: referenceText.width
+                        horizontalAlignment: Qt.AlignRight
+                        text: i18nc(
+                                  "volume percentage", "%1%", Math.floor(
+                                      slider.value / slider.maximumValue * 100.0))
                     }
                 }
 
@@ -228,7 +173,7 @@ MouseArea {
             when: expanded
             StateChangeScript {
                 script: {
-                    subLoader.sourceComponent = subComponent
+                    subLoader.sourceComponent = deviceDetails
                     showAnimation.running = true
                 }
             }
@@ -236,7 +181,7 @@ MouseArea {
     ]
 
     onClicked: {
-        if (!subComponent) {
+        if (!deviceDetails) {
             return
         }
 

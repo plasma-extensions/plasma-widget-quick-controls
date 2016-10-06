@@ -1,10 +1,12 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
+import QtQuick.Controls 1.4
 
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.components 2.0 as PlasmaComponents
+import org.kde.kquickcontrolsaddons 2.0
 
 import org.kde.plasma.private.volume 0.1
 
@@ -12,7 +14,7 @@ import "../../code/soundicon.js" as Icon
 
 Item {
     id: main
-    height: globalController.height
+    height: content.height
 
     GlobalActionCollection {
         // KGlobalAccel cannot transition from kmix to something else, so if
@@ -53,64 +55,118 @@ Item {
         id: sinkModel
     }
 
-    GlobalController {
-        id: globalController
+    SourceModel {
+        id: sourceModel
+    }
+
+    ColumnLayout {
+        id: content
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        subComponent: fullPanel;
-        //subComponent: sinkModel.rowCount() > 1 ? fullPanel : undefined;
+        PlasmaComponents.TabBar {
+            id: tabBar
+            property int index: 0
+            Layout.fillWidth: true
+            PlasmaComponents.TabButton {
+                text: i18n("Audio Output")
+                onClicked: {
+                    deviceDetails.sourceComponent = outputDeatils
+                    globalController.pulseObject = deviceDetails.item.defaultDevice;
+                }
+            }
 
-        pulseObject: sinkModel.sinks[currentDevice]
-        property int currentDevice : 0;
-        property var currentDeviceDescription : pulseObject ? pulseObject.description : i18n("Audio Volume");
+            PlasmaComponents.TabButton {
+                text: i18n("Audio Input")
+                onClicked: {
+                    deviceDetails.sourceComponent = inputDeatils
+                    globalController.pulseObject = deviceDetails.item.defaultDevice;
+                }
+            }
+        }
 
-        onSetVolume: main.setVolume(volume);
+        RowLayout {
+            Layout.fillWidth: true
+
+            GlobalController {
+                id: globalController
+                Layout.fillWidth: true
+                pulseObject: deviceDetails.item.defaultIndex
+                onSetVolume: main.setVolume(volume);
+            }
+
+            PlasmaCore.SvgItem {
+                id: expanderIcon
+                property bool expanded: false
+
+                implicitHeight: openSettingsButton.height;
+                implicitWidth: openSettingsButton.width;
+                antialiasing: true
+                svg: PlasmaCore.Svg {
+                    imagePath: "widgets/arrows"
+                }
+                elementId: "up-arrow"
+
+                states: State {
+                    name: "rotated"
+                    PropertyChanges {
+                        target: expanderIcon
+                        rotation: 180
+
+                    }
+                    when: expanderIcon.expanded
+                }
+
+                transitions: Transition {
+                    RotationAnimation {
+                        direction: expanderIcon.expanded ? RotationAnimation.Clockwise : RotationAnimation.Counterclockwise
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: expanderIcon.expanded = !expanderIcon.expanded
+                }
+            }
+
+            PlasmaComponents.ToolButton {
+                id: openSettingsButton
+
+                iconSource: "configure"
+                tooltip: i18n("Configure Audio Volume...")
+
+                onClicked: {
+                    KCMShell.open(["pulseaudio"])
+                }
+            }
+        }
+
+        Loader {
+            id: deviceDetails
+            Layout.fillWidth: true
+            visible: expanderIcon.expanded
+            sourceComponent: outputDeatils
+        }
+    }
+    Component {
+        id: outputDeatils
+        AudioControllersDetails {
+            model: sinkModel
+            onDefaultDeviceChanged: globalController.pulseObject = defaultDevice;
+        }
     }
 
     Component {
-        id: fullPanel
-
-        ColumnLayout {
-            ListView {
-                id: sinkView
-
-                Layout.fillWidth: true
-                Layout.minimumHeight: contentHeight
-                Layout.maximumHeight: contentHeight
-
-                model: sinkModel
-                boundsBehavior: Flickable.StopAtBounds
-                currentIndex: globalController.currentDevice
-                onCurrentIndexChanged: globalController.currentDevice = currentIndex;
-
-                highlight: Rectangle {
-                    anchors.fill: parent;
-                    color: theme.highlightColor;
-                }
-                highlightFollowsCurrentItem: false
-                delegate: RowLayout {
-
-                    PlasmaComponents.Label {
-                        Layout.leftMargin: 12;
-                        Layout.rightMargin: 8;
-                        Layout.topMargin: 8
-                        Layout.bottomMargin: 8
-                        text: PulseObject.description
-                        font.pointSize: 11
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: sinkView.currentIndex = index;
-                    }
-                }
-            }
+        id: inputDeatils
+        AudioControllersDetails {
+            model: sourceModel
+            onDefaultDeviceChanged: globalController.pulseObject = defaultDevice;
         }
     }
 
     function setVolume(volume) {
-        var device = globalController.pulseObject;
+        var device = globalController.pulseObject
         if (volume > 0 && globalController.muted) {
             var toMute = !device.Muted
             if (toMute) {
@@ -124,6 +180,6 @@ Item {
     }
 
     function volumePercent(volume) {
-        return 100 * volume / slider.maximumValue;
+        return 100 * volume / slider.maximumValue
     }
 }

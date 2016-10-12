@@ -53,10 +53,80 @@ Item {
 
     SinkModel {
         id: sinkModel
+
+        onDataChanged: syncProxyModel()
+
+        function syncProxyModel() {
+            // print("syncSinkProxyModel ")
+            sinkModelProxy.clear()
+            for (var i = 0; i < rowCount(); i++) {
+                var idx = index(i, 0)
+                var sink = data(idx, role("PulseObject"))
+                // print (sink, sink.description);
+                sinkModelProxy.append({
+                                          text: sink.description,
+                                          sink: sink
+                                      })
+                var isDefault = data(idx, role("Default"))
+                if (isDefault && sinkModelProxy.defaultSinkIndex !== i)
+                    sinkModelProxy.defaultSinkIndex = i
+            }
+        }
+
+        function setDefaultSink(i) {
+            // print ("setDefaultSink", i)
+            if (i < rowCount()) {
+                var idx = index(i, 0)
+                setData(idx, 1, role("Default"))
+            }
+        }
+    }
+
+    ListModel {
+        id: sinkModelProxy
+        property var defaultSink: sinkModel.defaultSink
+        property int defaultSinkIndex: -1
+
+        onDefaultSinkIndexChanged: sinkModel.setDefaultSink(defaultSinkIndex)
     }
 
     SourceModel {
         id: sourceModel
+
+        onDataChanged: syncProxyModel()
+
+        function syncProxyModel() {
+            // print("syncSourceProxyModel ")
+            sourceModelProxy.clear()
+            for (var i = 0; i < rowCount(); i++) {
+                var idx = index(i, 0)
+                var sink = data(idx, role("PulseObject"))
+                // print (sink, sink.description);
+                sourceModelProxy.append({
+                                          text: sink.description,
+                                          sink: sink
+                                      })
+                var isDefault = data(idx, role("Default"))
+                if (isDefault && sourceModelProxy.defaultSourceIndex !== i)
+                    sourceModelProxy.defaultSourceIndex = i
+            }
+        }
+
+        function setDefaultSource(i) {
+            // print ("setDefaultSink", i)
+            if (i < rowCount()) {
+                var idx = index(i, 0)
+                setData(idx, 1, role("Default"))
+            }
+        }
+    }
+
+    ListModel {
+        id: sourceModelProxy
+        property var defaultSource: sourceModel.defaultSource
+        property int defaultSourceIndex: -1
+
+        onDefaultSourceIndexChanged: sourceModel.setDefaultSource(defaultSourceIndex)
     }
 
     ColumnLayout {
@@ -65,43 +135,28 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        PlasmaComponents.TabBar {
-            id: tabBar
-            property int index: 0
-            Layout.fillWidth: true
-            PlasmaComponents.TabButton {
-                text: i18n("Audio Output")
-                onClicked: {
-                    deviceDetails.sourceComponent = outputDeatils
-                    globalController.pulseObject = deviceDetails.item.defaultDevice;
-                }
-            }
 
-            PlasmaComponents.TabButton {
-                text: i18n("Audio Input")
-                onClicked: {
-                    deviceDetails.sourceComponent = inputDeatils
-                    globalController.pulseObject = deviceDetails.item.defaultDevice;
-                }
-            }
-        }
+        spacing: 4
 
         RowLayout {
+            id: controller
             Layout.fillWidth: true
 
             GlobalController {
                 id: globalController
                 Layout.fillWidth: true
-                pulseObject: deviceDetails.item.defaultIndex
-                onSetVolume: main.setVolume(volume);
+                Layout.alignment: Qt.AlignVCenter
+                pulseObject: sinkModelProxy.defaultSink
+                onSetVolume: main.setVolume(volume)
             }
 
             PlasmaCore.SvgItem {
                 id: expanderIcon
+                Layout.alignment: Qt.AlignVCenter
                 property bool expanded: false
 
-                implicitHeight: openSettingsButton.height;
-                implicitWidth: openSettingsButton.width;
+                implicitHeight: openSettingsButton.height
+                implicitWidth: openSettingsButton.width
                 antialiasing: true
                 svg: PlasmaCore.Svg {
                     imagePath: "widgets/arrows"
@@ -142,25 +197,106 @@ Item {
         }
 
         Loader {
-            id: deviceDetails
+            id: deviceDetailsLoader
             Layout.fillWidth: true
-            visible: expanderIcon.expanded
-            sourceComponent: outputDeatils
+            Layout.bottomMargin: 12
+            clip: true;
+
+            Layout.maximumHeight: Layout.minimumHeight;
+
+            NumberAnimation {
+                id: showAnimation
+                target: deviceDetailsLoader
+                property: "Layout.minimumHeight"
+                from: 0
+                to: deviceDetailsLoader.implicitHeight
+            }
+
+            NumberAnimation {
+                id: hideAnimation
+                target: deviceDetailsLoader
+                property: "Layout.minimumHeight"
+                from: deviceDetailsLoader.implicitHeight
+                to: 0
+            }
         }
-    }
-    Component {
-        id: outputDeatils
-        AudioControllersDetails {
-            model: sinkModel
-            onDefaultDeviceChanged: globalController.pulseObject = defaultDevice;
-        }
+
+        states: [
+            State {
+                name: "collapsed"
+                when: !expanderIcon.expanded
+                StateChangeScript {
+                    script: {
+                        if (deviceDetailsLoader.status == Loader.Ready) {
+                            hideAnimation.running = true
+                            deviceDetailsLoader.sourceComponent = undefined
+                        }
+                    }
+                }
+            },
+            State {
+                name: "expanded"
+                when: expanderIcon.expanded
+                StateChangeScript {
+                    script: {
+                        deviceDetailsLoader.sourceComponent = details
+                        showAnimation.running = true
+                    }
+                }
+            }
+        ]
     }
 
     Component {
-        id: inputDeatils
-        AudioControllersDetails {
-            model: sourceModel
-            onDefaultDeviceChanged: globalController.pulseObject = defaultDevice;
+        id: details
+        ColumnLayout {
+            PlasmaComponents.Label {
+                Layout.leftMargin: 6
+                text: i18n("Outputs")
+            }
+
+            PlasmaComponents.ComboBox {
+                id: outputsComboBox
+                Layout.fillWidth: true
+                textRole: "text"
+                model: sinkModelProxy
+                currentIndex: sinkModelProxy.defaultSinkIndex
+                onCurrentIndexChanged: sinkModelProxy.defaultSinkIndex = currentIndex
+            }
+
+            PlasmaComponents.ComboBox {
+                id: outputsPortsComboBox
+                Layout.fillWidth: true
+                model: sinkModel.defaultSink.ports
+                onModelChanged: currentIndex = sinkModel.defaultSink.activePortIndex
+                textRole: "description"
+                currentIndex: sinkModel.defaultSink.activePortIndex
+                onActivated: sinkModel.defaultSink.activePortIndex = index
+            }
+
+            PlasmaComponents.Label {
+                Layout.leftMargin: 6
+                text: i18n("Inputs")
+            }
+
+            PlasmaComponents.ComboBox {
+                id: inputsComboBox
+                Layout.fillWidth: true
+                textRole: "text"
+                model: sourceModelProxy
+                currentIndex: sourceModelProxy.defaultSourceIndex
+                onCurrentIndexChanged: sourceModelProxy.defaultSourceIndex = currentIndex
+            }
+
+            PlasmaComponents.ComboBox {
+                id: inputsPortsComboBox
+                Layout.fillWidth: true
+                model: sourceModel.defaultSource.ports
+                onModelChanged: currentIndex = sourceModel.defaultSource.activePortIndex
+                textRole: "description"
+                currentIndex: sourceModel.defaultSource.activePortIndex
+                onActivated: sourceModel.defaultSource.activePortIndex = index
+            }
         }
     }
 

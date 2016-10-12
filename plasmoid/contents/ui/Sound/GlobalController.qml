@@ -11,16 +11,12 @@ import org.kde.plasma.extras 2.0 as PlasmaExtras
 MouseArea {
     id: root
     property bool muted: false
-    property bool expanded: false
     property string icon
-    property Component deviceDetails
     property var pulseObject
 
     signal setVolume(var volume)
 
-    enabled: deviceDetails
-
-    height: layout.implicitHeight + 8
+    height: layout.implicitHeight
 
     onIconChanged: {
         clientIcon.visible = icon ? true : false
@@ -126,65 +122,7 @@ MouseArea {
                                       slider.value / slider.maximumValue * 100.0))
                     }
                 }
-
-                Loader {
-                    id: subLoader
-                    height: 0
-                    clip: true
-
-                    Layout.fillWidth: true
-                    Layout.maximumHeight: Layout.minimumHeight
-
-                    NumberAnimation {
-                        id: showAnimation
-                        target: subLoader
-                        property: "Layout.minimumHeight"
-                        from: 0
-                        to: subLoader.item ? subLoader.item.implicitHeight : 0
-                    }
-
-                    NumberAnimation {
-                        id: hideAnimation
-                        target: subLoader
-                        property: "Layout.minimumHeight"
-                        from: subLoader.item.implicitHeight
-                        to: 0
-                    }
-                }
             }
         }
-    }
-
-    states: [
-        State {
-            name: "collapsed"
-            when: !expanded
-            StateChangeScript {
-                script: {
-                    if (subLoader.status == Loader.Ready) {
-                        hideAnimation.running = true
-                        subLoader.sourceComponent = undefined
-                    }
-                }
-            }
-        },
-        State {
-            name: "expanded"
-            when: expanded
-            StateChangeScript {
-                script: {
-                    subLoader.sourceComponent = deviceDetails
-                    showAnimation.running = true
-                }
-            }
-        }
-    ]
-
-    onClicked: {
-        if (!deviceDetails) {
-            return
-        }
-
-        expanded = !expanded
     }
 }
